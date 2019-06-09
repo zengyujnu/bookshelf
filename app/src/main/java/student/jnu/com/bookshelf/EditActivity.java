@@ -1,10 +1,15 @@
 package student.jnu.com.bookshelf;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -18,9 +23,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -30,6 +41,7 @@ public class EditActivity extends AppCompatActivity{
     //private SimpleToolbar mSimpleToolbar;
     public List<String> list1 = new ArrayList<String>();
     public List<String> list2 = new ArrayList<String>();
+
     private Spinner spinner;
     private Spinner spinner_shelf;
     private Spinner spinner_label;
@@ -45,12 +57,28 @@ public class EditActivity extends AppCompatActivity{
     EditText edit_author ;
     EditText edit_publish ;
     EditText edit_year ;
-    EditText edit_month;
     EditText edit_ISBN ;
     EditText edit_note ;
     EditText edit_website ;
+    ImageView imageView;
     //private Button return_view;
     //private Button save_view;
+
+    public Bitmap getPicture(String path){
+        Bitmap bm=null;
+        try{
+            URL url=new URL(path);
+            URLConnection connection=url.openConnection();
+            connection.connect();
+            InputStream inputStream=connection.getInputStream();
+            bm= BitmapFactory.decodeStream(inputStream);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  bm;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,23 +89,44 @@ public class EditActivity extends AppCompatActivity{
         edit_author = (EditText) findViewById(R.id.edit_author);
         edit_publish = (EditText) findViewById(R.id.edit_publish);
         edit_year = (EditText) findViewById(R.id.edit_year);
-        edit_month = (EditText) findViewById(R.id.edit_month);
         edit_ISBN = (EditText) findViewById(R.id.edit_ISBN);
         edit_note = (EditText) findViewById(R.id.edit_note);
         edit_website = (EditText) findViewById(R.id.edit_website);
+        imageView = (ImageView)findViewById(R.id.imageView);
 
         if (MainActivity.i == 1) {
             Bundle bundle = this.getIntent().getExtras();
             String ISBN = bundle.getString("isbn");
             edit_ISBN.setText(ISBN);
-            final BookCollection bookCollection = new BookCollection(ISBN);
+            final BookCollection bookCollection = new BookCollection();
+            @SuppressLint("HandlerLeak")
             Handler handler = new Handler() {
                 public void handleMessage(Message msg) {
                     edit_title.setText(bookCollection.getBook());
-
+                    edit_author.setText(bookCollection.getAuthor());
+                    edit_publish.setText(bookCollection.getPublisher());
+                    edit_year.setText(bookCollection.getYear());
+                    edit_note.setText(bookCollection.getImgSrc());
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Bitmap bitmap=getPicture("http://app2.showapi.com/isbn/img1/eaa363cbced8474e992dea310faf176d.jpg");
+                            //final Bitmap bitmap=getPicture(bookCollection.getImgSrc());
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            imageView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    imageView.setImageBitmap(bitmap);
+                                }
+                            });
+                        }
+                    }).start();
                 };
             };
-
             bookCollection.download(handler,ISBN);
             //edit_title.setText(bookCollection.getBook());
             MainActivity.i = 0;
@@ -284,13 +333,13 @@ public class EditActivity extends AppCompatActivity{
             values.put(BookDB.BookTable.Cols.BOOK_NAME,String.valueOf(edit_title.getText()));
             values.put(BookDB.BookTable.Cols.AUTHOR,String.valueOf(edit_author.getText()));
             values.put(BookDB.BookTable.Cols.PRESS,String.valueOf(edit_publish.getText()));
-            values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,2015);
-            values.put(BookDB.BookTable.Cols.PUBLISHTIME_MONTH,2);
+            values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,String.valueOf(edit_year.getText()));
+            values.put(BookDB.BookTable.Cols.PUBLISHTIME_MONTH," ");
             values.put(BookDB.BookTable.Cols.ISBN,String.valueOf(edit_ISBN.getText()));
             values.put(BookDB.BookTable.Cols.STATUS,Book.NOTSETUP);
             values.put(BookDB.BookTable.Cols.BOOKSHELF,"默认书架");
-            values.put(BookDB.BookTable.Cols.NOTE,"这本书好厚");
-            values.put(BookDB.BookTable.Cols.URL,"www.wqbook.com");
+            values.put(BookDB.BookTable.Cols.NOTE,String.valueOf(edit_note.getText()));
+            values.put(BookDB.BookTable.Cols.URL,"http://119.29.3.47:9001/book/worm/isbn?isbn=");
             values.put(BookDB.BookTable.Cols.IMAGEURL,"");
             db.insert(BookDB.BookTable.NAME,null,values);
             db.close();

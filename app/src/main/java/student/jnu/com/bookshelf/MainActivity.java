@@ -91,19 +91,6 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-
-                //editTextName.setText(content);
-                //Toast.makeText(this,"点击发送" + content,Toast.LENGTH_SHORT).show();
-                /*final BookCollection bookCollection = new BookCollection(content);
-
-                Handler handler = new Handler() {
-                    public void handleMessage(Message msg) {
-                        Bundle bundle = new Bundle();
-                        bundle.putString("title", bookCollection.getBook());
-                        //editTextName.setText(bookCollection.getBook());
-                    };
-                };
-                bookCollection.download(handler,content);*/
                 i = 1;
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, EditActivity.class);
@@ -534,10 +521,10 @@ public class MainActivity extends AppCompatActivity
             TextView publishTime_text = (TextView)view.findViewById(R.id.publishTime_text);
             bookImage.setImageResource(R.mipmap.ic_launcher);
 
-
             bookname_text.setText(books.get(position).getBookName());
-            authorPress_name.setText(books.get(position).getAuthor()+" 著 "+books.get(position).getPress());
-            publishTime_text.setText(String.valueOf(books.get(position).getPublishTime_Year())+"-"+String.valueOf(books.get(position).getPublishTime_Month()));
+            authorPress_name.setText(books.get(position).getAuthor()+"    "+books.get(position).getPress());
+            //publishTime_text.setText(String.valueOf(books.get(position).getPublishTime_Year())+"-"+String.valueOf(books.get(position).getPublishTime_Month()));
+            publishTime_text.setText(String.valueOf(books.get(position).getPublishTime_Year())+"  ");
             return view;
             //return null;
         }
