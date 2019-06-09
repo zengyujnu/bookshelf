@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:layout_editor_absoluteX="12dp"
+    tools:layout_editor_absoluteY="70dp">
+
+    <!--<android.support.v7.widget.Toolbar-->
+    <!--android:id="@+id/toolbar"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <!--android:background="?attr/colorPrimary"-->
+    <!--android:theme="@style/AppTheme.AppBarOverlay"-->
+    <!--app:logo="@mipmap/icon_left"-->
+    <!--app:popupTheme="@style/AppTheme.PopupOverlay"-->
+    <!--app:title="编辑书籍信息" />-->
+    <!--<android.support.v7.widget.com.example.hp.myapplication.SimpleToolbar-->
+    <!--android:id="@+id/simple_toolbar"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="49dp"-->
+    <!--android:background="?attr/colorPrimaryDark"-->
+    <!--android:fitsSystemWindows="true"-->
+    <!--android:minHeight="?attr/actionBarSize"-->
+    <!--app:contentInsetLeft="0dp"-->
+    <!--app:contentInsetStart="0dp" />-->
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/simple_toolbar"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_collapseMode="pin"
+        app:title="编辑书籍信息"
+        app:titleTextColor="@color/colorWhite"
+        app:navigationIcon="@drawable/baseline_arrow_back_white_48"
+        >
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:layout_editor_absoluteX="12dp"
+        tools:layout_editor_absoluteY="70dp">
+
+
+        <LinearLayout
+            android:layout_width="113dp"
+            android:layout_height="165dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="100dp"
+                android:layout_height="151dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                app:layout_editor_absoluteX="0dp"
+                app:layout_editor_absoluteY="16dp"
+                app:srcCompat="@android:color/darker_gray"
+                tools:ignore="ContentDescription"
+                tools:layout_editor_absoluteX="25dp"
+                tools:layout_editor_absoluteY="56dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="-4dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_title"
+                    tools:ignore="HardcodedText" />
+
+                <EditText
+                    android:id="@+id/edit_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="8dp"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:hint="@string/title"
+                    android:textAppearance="@style/TextAppearance.AppCompat"
+                    android:textSize="16sp"
+                    tools:ignore="HardcodedText,LabelFor" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:labelFor="@+id/book_author_edit_text"
+                    android:text="@string/text_author" />
+
+                <EditText
+                    android:id="@+id/edit_author"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="8dp"
+                    android:inputType="text"
+                    android:hint="@string/author"
+                    android:textSize="16sp"
+                    tools:ignore="LabelFor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/translator_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_publish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_publish" />
+
+                <EditText
+                    android:id="@+id/edit_publish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="8dp"
+                    android:inputType="text"
+                    android:hint="@string/publish"
+                    android:textSize="16sp"
+                    tools:ignore="LabelFor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_time" />
+
+                <EditText
+                    android:id="@+id/edit_year"
+                    android:layout_width="72dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="10dp"
+                    android:hint="年"
+                    android:inputType="text"
+                    android:textSize="16sp"
+                    tools:ignore="LabelFor" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—" />
+
+                <EditText
+                    android:id="@+id/edit_month"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="8dp"
+                    android:inputType="text"
+                    android:hint="月"
+                    android:textSize="16sp"
+                    tools:ignore="LabelFor" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_ISBN"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_isbn" />
+
+                <EditText
+                    android:id="@+id/edit_ISBN"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="8dp"
+                    android:inputType="number"
+                    android:hint="@string/isbn"
+                    android:textSize="16sp"
+                    tools:ignore="LabelFor" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="277dp">
+
+
+        <LinearLayout
+            android:layout_width="348dp"
+            android:layout_height="73dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="225dp"
+                android:layout_height="29dp"
+                android:text="    详情（来源：腾讯）"
+                android:textSize="17sp"
+                app:layout_editor_absoluteX="16dp"
+                app:layout_editor_absoluteY="215dp"
+                tools:ignore="HardcodedText,MissingConstraints"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="215dp" />
+
+            <View
+                android:layout_width="350dp"
+                android:layout_height="7dp"
+                android:background="#aa000000"
+                android:layout_marginStart="10dp"
+                app:layout_editor_absoluteX="16dp"
+                app:layout_editor_absoluteY="245dp"
+                tools:ignore="MissingConstraints"
+                tools:layout_editor_absoluteX="18dp"
+                tools:layout_editor_absoluteY="240dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="-4dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageView7"
+                    android:layout_width="40dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/read"
+                    app:layout_editor_absoluteX="25dp"
+                    app:layout_editor_absoluteY="278dp"
+                    tools:ignore="ContentDescription,MissingConstraints"
+                    tools:layout_editor_absoluteX="53dp"
+                    tools:layout_editor_absoluteY="287dp" />
+
+                <Spinner
+                    android:id="@+id/spiner1"
+                    android:layout_width="216dp"
+                    android:layout_height="36dp"
+                    android:entries="@drawable/spinner_read"
+
+                    app:layout_editor_absoluteX="100dp"
+                    app:layout_editor_absoluteY="278dp"
+                    tools:ignore="MissingConstraints"
+                    tools:layout_editor_absoluteX="78dp"
+                    tools:layout_editor_absoluteY="324dp" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="43dp"
+                android:layout_marginTop="-4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageView8"
+                    android:layout_width="40dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/shelf"
+                    app:layout_editor_absoluteX="25dp"
+                    app:layout_editor_absoluteY="326dp"
+                    tools:ignore="ContentDescription,MissingConstraints"
+                    tools:layout_editor_absoluteX="29dp"
+                    tools:layout_editor_absoluteY="336dp" />
+
+                <Spinner
+                    android:id="@+id/spiner2"
+                    android:layout_width="215dp"
+                    android:layout_height="31dp"
+
+                    android:layout_marginBottom="4dp"
+                    app:layout_constraintBottom_toTopOf="@+id/edit_note"
+                    app:layout_editor_absoluteX="100dp"
+                    app:layout_editor_absoluteY="320dp"
+                    tools:ignore="MissingConstraints"
+                    tools:layout_editor_absoluteX="79dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageView10"
+                    android:layout_width="40dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/label"
+                    app:layout_editor_absoluteX="25dp"
+                    app:layout_editor_absoluteY="422dp"
+                    tools:ignore="ContentDescription,MissingConstraints"
+                    tools:layout_editor_absoluteX="25dp"
+                    tools:layout_editor_absoluteY="438dp" />
+
+                <Spinner
+                    android:id="@+id/spiner3"
+                    android:layout_width="215dp"
+                    android:layout_height="31dp"
+
+                    android:layout_marginBottom="4dp"
+                    app:layout_constraintBottom_toTopOf="@+id/edit_note"
+                    app:layout_editor_absoluteX="100dp"
+                    app:layout_editor_absoluteY="320dp"
+                    tools:ignore="MissingConstraints"
+                    tools:layout_editor_absoluteX="79dp" />
+            </LinearLayout>
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageView9"
+                    android:layout_width="40dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/note"
+                    app:layout_editor_absoluteX="25dp"
+                    app:layout_editor_absoluteY="372dp"
+                    tools:ignore="ContentDescription,MissingConstraints"
+                    tools:layout_editor_absoluteX="58dp"
+                    tools:layout_editor_absoluteY="410dp" />
+
+                <EditText
+                    android:id="@+id/edit_note"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:hint="笔记"
+
+                    app:layout_editor_absoluteX="100dp"
+                    app:layout_editor_absoluteY="350dp"
+                    tools:ignore="HardcodedText,LabelFor,MissingConstraints"
+                    tools:layout_editor_absoluteX="79dp" />
+            </LinearLayout>
+
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageView11"
+                    android:layout_width="40dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/website"
+                    app:layout_editor_absoluteX="25dp"
+                    app:layout_editor_absoluteY="470dp"
+                    tools:ignore="ContentDescription,MissingConstraints"
+                    tools:layout_editor_absoluteX="25dp"
+                    tools:layout_editor_absoluteY="495dp" />
+
+                <EditText
+                    android:id="@+id/edit_website"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:hint="网站"
+                    app:layout_editor_absoluteX="100dp"
+                    app:layout_editor_absoluteY="449dp"
+                    tools:ignore="HardcodedText,LabelFor,MissingConstraints"
+                    tools:layout_editor_absoluteX="100dp"
+                    tools:layout_editor_absoluteY="488dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

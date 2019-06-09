@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_book"
+            android:icon="@drawable/baseline_view_list_24"
+            android:title="书籍" />
+        <item
+            android:id="@+id/nav_search"
+            android:icon="@drawable/baseline_search_24"
+            android:title="搜索" />
+    </group>
+
+    <item android:title="标签">
+        <menu>
+            <item
+                android:id="@+id/nav_lable"
+                android:icon="@drawable/baseline_add_24"
+                android:title="添加新标签" />
+        </menu>
+    </item>
+
+    <item android:title="其它">
+        <menu>
+            <item
+                android:id="@+id/nav_donate"
+                android:icon="@drawable/baseline_star_24"
+                android:title="捐赠" />
+            <item
+                android:id="@+id/nav_set"
+                android:icon="@drawable/baseline_settings_black_24"
+                android:title="设置" />
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/baseline_error_24"
+                android:title="关于" />
+        </menu>
+    </item>
+
+</menu>

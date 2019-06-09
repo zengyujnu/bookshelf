@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <resources>
+        <string-array android:name="spinner_read">
+            <item>阅读状态未设置</item>
+            <item>未读</item>
+            <item>已读</item>
+            <item>阅读中</item>
+        </string-array>
+    </resources>
+</selector>
