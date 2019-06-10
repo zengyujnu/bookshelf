@@ -15,6 +15,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,24 +62,9 @@ public class EditActivity extends AppCompatActivity{
     EditText edit_note ;
     EditText edit_website ;
     ImageView imageView;
+    String image;
     //private Button return_view;
     //private Button save_view;
-
-    public Bitmap getPicture(String path){
-        Bitmap bm=null;
-        try{
-            URL url=new URL(path);
-            URLConnection connection=url.openConnection();
-            connection.connect();
-            InputStream inputStream=connection.getInputStream();
-            bm= BitmapFactory.decodeStream(inputStream);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return  bm;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,35 +82,25 @@ public class EditActivity extends AppCompatActivity{
 
         if (MainActivity.i == 1) {
             Bundle bundle = this.getIntent().getExtras();
-            String ISBN = bundle.getString("isbn");
+            final String ISBN = bundle.getString("isbn");
             edit_ISBN.setText(ISBN);
             final BookCollection bookCollection = new BookCollection();
             @SuppressLint("HandlerLeak")
             Handler handler = new Handler() {
                 public void handleMessage(Message msg) {
-                    edit_title.setText(bookCollection.getBook());
-                    edit_author.setText(bookCollection.getAuthor());
-                    edit_publish.setText(bookCollection.getPublisher());
-                    edit_year.setText(bookCollection.getYear());
-                    edit_note.setText(bookCollection.getImgSrc());
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            final Bitmap bitmap=getPicture("http://app2.showapi.com/isbn/img1/eaa363cbced8474e992dea310faf176d.jpg");
-                            //final Bitmap bitmap=getPicture(bookCollection.getImgSrc());
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            imageView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    imageView.setImageBitmap(bitmap);
-                                }
-                            });
-                        }
-                    }).start();
+                    try{
+                        edit_title.setText(bookCollection.getBook());
+                        edit_author.setText(bookCollection.getAuthor());
+                        edit_publish.setText(bookCollection.getPublisher());
+                        edit_year.setText(bookCollection.getYear());
+                        //edit_note.setText(bookCollection.getImgSrc());
+                        image = bookCollection.getImgSrc();
+                        byte[] decode = Base64.decode(bookCollection.getImgSrc(), Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+                        imageView.setImageBitmap(bitmap);
+                        //DownImage downImage = new DownImage();
+                        //downImage.download(imageView,ISBN,"http://app2.showapi.com/isbn/img1/eaa363cbced8474e992dea310faf176d.jpg");
+                    }catch (Exception E){}
                 };
             };
             bookCollection.download(handler,ISBN);
@@ -340,7 +316,7 @@ public class EditActivity extends AppCompatActivity{
             values.put(BookDB.BookTable.Cols.BOOKSHELF,"默认书架");
             values.put(BookDB.BookTable.Cols.NOTE,String.valueOf(edit_note.getText()));
             values.put(BookDB.BookTable.Cols.URL,"http://119.29.3.47:9001/book/worm/isbn?isbn=");
-            values.put(BookDB.BookTable.Cols.IMAGEURL,"");
+            values.put(BookDB.BookTable.Cols.IMAGEURL,image);
             db.insert(BookDB.BookTable.NAME,null,values);
             db.close();
 

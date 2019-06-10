@@ -7,10 +7,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Base64;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -519,7 +522,12 @@ public class MainActivity extends AppCompatActivity
             TextView bookname_text = (TextView)view.findViewById(R.id.bookName_text);
             TextView authorPress_name = (TextView)view.findViewById(R.id.authorPress_text);
             TextView publishTime_text = (TextView)view.findViewById(R.id.publishTime_text);
-            bookImage.setImageResource(R.mipmap.ic_launcher);
+            try{
+                byte[] decode = android.util.Base64.decode(books.get(position).getImageUrl(), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+                bookImage.setImageBitmap(bitmap);
+                //bookImage.setImageResource(R.mipmap.ic_launcher);
+            }catch (Exception E){}
 
             bookname_text.setText(books.get(position).getBookName());
             authorPress_name.setText(books.get(position).getAuthor()+"    "+books.get(position).getPress());
@@ -564,7 +572,7 @@ public class MainActivity extends AppCompatActivity
         bookListAdapter.notifyDataSetChanged();
     }
 
-    public void save(String inputText) {
+    /*public void save(String inputText) {
         FileOutputStream out = null;
         BufferedWriter writer = null;
         try {
@@ -583,7 +591,7 @@ public class MainActivity extends AppCompatActivity
             }
 
         }
-    }
+    }*/
 
     @Override
     public void onDestroy() {

@@ -51,6 +51,7 @@ public class BookCollection {
                 try {
                     //你的URL
                     String url_s = "http://119.29.3.47:9001/book/worm/isbn?isbn="+ ISBN;
+                    //String url_s = "https://api.jisuapi.com/isbn/query?appkey=d4a09c0d185f8782&isbn="+ISBN;
                     URL url = new URL(url_s);
                     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
                     //设置连接属性。不喜欢的话直接默认也阔以
@@ -90,6 +91,13 @@ public class BookCollection {
             publisher = json.getString("publisher");
             year = json.getString("publishingTime");
             imgSrc = json.getString("image");
+            /*JSONObject jsonObject = new JSONObject(text);
+            JSONObject json = jsonObject.getJSONObject("result");
+            name = json.getString("title");
+            author = json.getString("author");
+            publisher = json.getString("publisher");
+            year = json.getString("pubdate");
+            imgSrc = json.getString("pic");*/
         } catch (Exception e) {
             e.printStackTrace();
         }
