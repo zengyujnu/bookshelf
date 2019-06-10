@@ -2,15 +2,19 @@ package student.jnu.com.bookshelf;
 
 import android.app.Activity;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.widget.Toolbar;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +22,8 @@ public class BookDetailActivity extends AppCompatActivity{
 
     private int books_index;
     private TextView authorText,pressText,isbnText,statusText,bookshelfText,noteText,lableText,urlText;
+    private ImageView image;
+    private Toolbar toolbar;
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -40,9 +46,19 @@ public class BookDetailActivity extends AppCompatActivity{
         noteText = (TextView)findViewById(R.id.note_text);
         lableText = (TextView)findViewById(R.id.lable_text);
         urlText = (TextView)findViewById(R.id.url_text);
+        image = (ImageView)findViewById(R.id.image);
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
 
         books_index = getIntent().getIntExtra("books_index",0);
 
+        try{
+            byte[] decode = android.util.Base64.decode(MainActivity.books.get(books_index).getImageUrl(), Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+            image.setImageBitmap(bitmap);
+            image.setScaleType(ImageView.ScaleType.CENTER);
+            //bookImage.setImageResource(R.mipmap.ic_launcher);
+        }catch (Exception E){}
+        toolbar.setTitle(MainActivity.books.get(books_index).getBookName());
         authorText.setText(MainActivity.books.get(books_index).getAuthor());
         pressText.setText(MainActivity.books.get(books_index).getPress());
         isbnText.setText(MainActivity.books.get(books_index).getISBN());
