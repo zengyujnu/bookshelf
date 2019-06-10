@@ -31,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -182,6 +183,42 @@ public class MainActivity extends AppCompatActivity
         final FloatingActionButton fab1 = (FloatingActionButton) findViewById(R.id.fab1);
         final Button writeAdd1=(Button)findViewById(R.id.writeAdd1) ;
         final FloatingActionButton writeAdd = (FloatingActionButton) findViewById(R.id.writeAdd);
+        final Button writeISBN1=(Button)findViewById(R.id.writeISBN1) ;
+        final FloatingActionButton writeISBN = (FloatingActionButton) findViewById(R.id.writeISBN);
+
+        writeISBN1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                batchAdd1.setVisibility(View.INVISIBLE);
+                singleAdd1.setVisibility(View.INVISIBLE);
+                writeAdd1.setVisibility(View.INVISIBLE);
+                writeISBN1.setVisibility(View.INVISIBLE);
+                writeISBN.hide();
+                batchAdd.hide();
+                singleAdd.hide();
+                writeAdd.hide();
+                fab.show();
+                fab1.hide();
+                diglog();
+            }
+        });
+
+        writeISBN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                batchAdd1.setVisibility(View.INVISIBLE);
+                singleAdd1.setVisibility(View.INVISIBLE);
+                writeAdd1.setVisibility(View.INVISIBLE);
+                writeISBN1.setVisibility(View.INVISIBLE);
+                writeISBN.hide();
+                batchAdd.hide();
+                singleAdd.hide();
+                writeAdd.hide();
+                fab.show();
+                fab1.hide();
+                diglog();
+            }
+        });
 
         writeAdd1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,6 +226,8 @@ public class MainActivity extends AppCompatActivity
                 batchAdd1.setVisibility(View.INVISIBLE);
                 singleAdd1.setVisibility(View.INVISIBLE);
                 writeAdd1.setVisibility(View.INVISIBLE);
+                writeISBN1.setVisibility(View.INVISIBLE);
+                writeISBN.hide();
                 batchAdd.hide();
                 singleAdd.hide();
                 writeAdd.hide();
@@ -206,6 +245,8 @@ public class MainActivity extends AppCompatActivity
                 batchAdd1.setVisibility(View.INVISIBLE);
                 singleAdd1.setVisibility(View.INVISIBLE);
                 writeAdd1.setVisibility(View.INVISIBLE);
+                writeISBN1.setVisibility(View.INVISIBLE);
+                writeISBN.hide();
                 batchAdd.hide();
                 singleAdd.hide();
                 writeAdd.hide();
@@ -229,6 +270,8 @@ public class MainActivity extends AppCompatActivity
                 batchAdd1.setVisibility(View.INVISIBLE);
                 singleAdd1.setVisibility(View.INVISIBLE);
                 writeAdd1.setVisibility(View.INVISIBLE);
+                writeISBN1.setVisibility(View.INVISIBLE);
+                writeISBN.hide();
                 batchAdd.hide();
                 singleAdd.hide();
                 writeAdd.hide();
@@ -261,6 +304,8 @@ public class MainActivity extends AppCompatActivity
                 batchAdd1.setVisibility(View.VISIBLE);
                 singleAdd1.setVisibility(View.VISIBLE);
                 writeAdd1.setVisibility(View.VISIBLE);
+                writeISBN1.setVisibility(View.VISIBLE);
+                writeISBN.show();
                 batchAdd.show();
                 singleAdd.show();
                 writeAdd.show();
@@ -275,6 +320,8 @@ public class MainActivity extends AppCompatActivity
                 batchAdd1.setVisibility(View.INVISIBLE);
                 singleAdd1.setVisibility(View.INVISIBLE);
                 writeAdd1.setVisibility(View.INVISIBLE);
+                writeISBN1.setVisibility(View.INVISIBLE);
+                writeISBN.hide();
                 batchAdd.hide();
                 singleAdd.hide();
                 writeAdd.hide();
@@ -289,6 +336,8 @@ public class MainActivity extends AppCompatActivity
                 batchAdd1.setVisibility(View.INVISIBLE);
                 singleAdd1.setVisibility(View.INVISIBLE);
                 writeAdd1.setVisibility(View.INVISIBLE);
+                writeISBN1.setVisibility(View.INVISIBLE);
+                writeISBN.hide();
                 batchAdd.hide();
                 singleAdd.hide();
                 writeAdd.hide();
@@ -306,6 +355,8 @@ public class MainActivity extends AppCompatActivity
                 batchAdd1.setVisibility(View.INVISIBLE);
                 singleAdd1.setVisibility(View.INVISIBLE);
                 writeAdd1.setVisibility(View.INVISIBLE);
+                writeISBN1.setVisibility(View.INVISIBLE);
+                writeISBN.hide();
                 batchAdd.hide();
                 singleAdd.hide();
                 writeAdd.hide();
@@ -328,6 +379,8 @@ public class MainActivity extends AppCompatActivity
                 batchAdd1.setVisibility(View.INVISIBLE);
                 singleAdd1.setVisibility(View.INVISIBLE);
                 writeAdd1.setVisibility(View.INVISIBLE);
+                writeISBN1.setVisibility(View.INVISIBLE);
+                writeISBN.hide();
                 batchAdd.hide();
                 singleAdd.hide();
                 writeAdd.hide();
@@ -536,6 +589,37 @@ public class MainActivity extends AppCompatActivity
             return view;
             //return null;
         }
+    }
+
+    public void diglog()
+
+    {
+        View view = getLayoutInflater().inflate(R.layout.new_shelf, null);
+        final EditText editText = (EditText) view.findViewById(R.id.editText_shelfname);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+
+                .setTitle("输入ISBN")//设置对话框的标题
+                .setView(view)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        i = 1;
+                        Intent intent = new Intent();
+                        intent.setClass(MainActivity.this, EditActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("isbn", String.valueOf(editText.getText()));
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
+                }).create();
+        dialog.show();
     }
 
     //将cursor的内容添加到Books中

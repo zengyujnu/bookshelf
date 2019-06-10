@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_settings1"
-        android:icon="@drawable/baseline_more_vert_white_36"
         android:orderInCategory="100"
         android:title="删除书籍"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
 </menu>
