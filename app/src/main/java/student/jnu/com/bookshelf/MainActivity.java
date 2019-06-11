@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity
     Cursor cursor;
     SQLiteDatabase db;
     public boolean isMore_add;
-    static int i = 0;
+    static int intent1 = 0;
     String[] items = new String[] { "作者", "标题", "出版社","出版时间" };
 
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                i = 1;
+                intent1 = 1;
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, EditActivity.class);
                 Bundle bundle = new Bundle();
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity
                 //Toast.makeText(this, "ISBN:" + result.getContents(), Toast.LENGTH_LONG).show();
                 //edit_ISBN.setText(result.getContents());//单次扫描
 
-                i = 1;
+                intent1 = 1;
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, EditActivity.class);
                 Bundle bundle = new Bundle();
@@ -530,7 +530,7 @@ public class MainActivity extends AppCompatActivity
 
     /*private class mItemClick implements android.widget.AdapterView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        public void onItemClick(AdapterView<?> adapterView, View view, int intent1, long l) {
             Intent intent = new Intent(MainActivity.this,BookDetailActivity.class);
             startActivity(intent);
         }
@@ -596,7 +596,7 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        i = 1;
+                        intent1 = 1;
                         Intent intent = new Intent();
                         intent.setClass(MainActivity.this, EditActivity.class);
                         Bundle bundle = new Bundle();

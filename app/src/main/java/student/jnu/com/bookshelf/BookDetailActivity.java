@@ -1,12 +1,14 @@
 package student.jnu.com.bookshelf;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.view.Menu;
@@ -48,6 +50,7 @@ public class BookDetailActivity extends AppCompatActivity{
         urlText = (TextView)findViewById(R.id.url_text);
         image = (ImageView)findViewById(R.id.image);
         toolbar = (Toolbar)findViewById(R.id.toolbar);
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
 
         books_index = getIntent().getIntExtra("books_index",0);
 
@@ -80,6 +83,19 @@ public class BookDetailActivity extends AppCompatActivity{
         noteText.setText(MainActivity.books.get(books_index).getNote());
         //lableText.setText(BookShelfActivity.books.get(books_index).get);
         urlText.setText(MainActivity.books.get(books_index).getUrl());
+
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.intent1 = 2;
+                Intent intent = new Intent();
+                intent.setClass(BookDetailActivity.this, EditActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("books_index", books_index);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
 
     }
 

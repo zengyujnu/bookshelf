@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -22,20 +20,12 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
 public class EditActivity extends AppCompatActivity{
@@ -63,6 +53,7 @@ public class EditActivity extends AppCompatActivity{
     EditText edit_website ;
     ImageView imageView;
     String image;
+    int books_index;
     //private Button return_view;
     //private Button save_view;
 
@@ -80,7 +71,7 @@ public class EditActivity extends AppCompatActivity{
         edit_website = (EditText) findViewById(R.id.edit_website);
         imageView = (ImageView)findViewById(R.id.imageView);
 
-        if (MainActivity.i == 1) {
+        if (MainActivity.intent1 == 1) {
             Bundle bundle = this.getIntent().getExtras();
             final String ISBN = bundle.getString("isbn");
             edit_ISBN.setText(ISBN);
@@ -105,7 +96,42 @@ public class EditActivity extends AppCompatActivity{
             };
             bookCollection.download(handler,ISBN);
             //edit_title.setText(bookCollection.getBook());
-            MainActivity.i = 0;
+
+        }
+
+        if(MainActivity.intent1 == 2){
+            Bundle bundle = this.getIntent().getExtras();
+            books_index = bundle.getInt("books_index");
+            try{
+                byte[] decode = android.util.Base64.decode(MainActivity.books.get(books_index).getImageUrl(), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+                imageView.setImageBitmap(bitmap);
+                imageView.setScaleType(ImageView.ScaleType.CENTER);
+                //bookImage.setImageResource(R.mipmap.ic_launcher);
+            }catch (Exception E){}
+            edit_title.setText(MainActivity.books.get(books_index).getBookName());
+            edit_author.setText(MainActivity.books.get(books_index).getAuthor());
+            edit_publish.setText(MainActivity.books.get(books_index).getPress());
+            edit_ISBN.setText(MainActivity.books.get(books_index).getISBN());
+            edit_year.setText(String.valueOf(MainActivity.books.get(books_index).getPublishTime_Year()));
+            /*switch (MainActivity.books.get(books_index).getStatus()){
+                case Book.NOTSETUP:
+                    statusText.setText("阅读状态未设置");
+                    break;
+                case Book.UNREAD:
+                    statusText.setText("未读");
+                    break;
+                case Book.READING:
+                    statusText.setText("在读读");
+                    break;
+                case Book.ALREADYREAD:
+                    statusText.setText("已读");
+                    break;
+            }*/
+            //bookshelfText.setText(MainActivity.books.get(books_index).getBookshelf());
+            edit_note.setText(MainActivity.books.get(books_index).getNote());
+            //lableText.setText(BookShelfActivity.books.get(books_index).get);
+            edit_website.setText(MainActivity.books.get(books_index).getUrl());
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.simple_toolbar);
@@ -276,7 +302,7 @@ public class EditActivity extends AppCompatActivity{
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        MainActivity.intent1 = 0;
                         dialog.dismiss();
                         /*Intent intent = new Intent(EditActivity.this,MainActivity.class);
                         startActivity(intent);*/
@@ -303,26 +329,49 @@ public class EditActivity extends AppCompatActivity{
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.save) {
-            Toast.makeText(EditActivity.this, "保存成功" , Toast.LENGTH_SHORT).show();
-            SQLiteDatabase db = MainActivity.helper.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(BookDB.BookTable.Cols.BOOK_NAME,String.valueOf(edit_title.getText()));
-            values.put(BookDB.BookTable.Cols.AUTHOR,String.valueOf(edit_author.getText()));
-            values.put(BookDB.BookTable.Cols.PRESS,String.valueOf(edit_publish.getText()));
-            values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,String.valueOf(edit_year.getText()));
-            values.put(BookDB.BookTable.Cols.PUBLISHTIME_MONTH," ");
-            values.put(BookDB.BookTable.Cols.ISBN,String.valueOf(edit_ISBN.getText()));
-            values.put(BookDB.BookTable.Cols.STATUS,Book.NOTSETUP);
-            values.put(BookDB.BookTable.Cols.BOOKSHELF,"默认书架");
-            values.put(BookDB.BookTable.Cols.NOTE,String.valueOf(edit_note.getText()));
-            values.put(BookDB.BookTable.Cols.URL,"http://119.29.3.47:9001/book/worm/isbn?isbn=");
-            values.put(BookDB.BookTable.Cols.IMAGEURL,image);
-            db.insert(BookDB.BookTable.NAME,null,values);
-            db.close();
+            if(MainActivity.intent1 == 2){
+                Toast.makeText(EditActivity.this, "修改成功" , Toast.LENGTH_SHORT).show();
+                SQLiteDatabase db = MainActivity.helper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(BookDB.BookTable.Cols.BOOK_NAME,edit_title.getText().toString());
+                values.put(BookDB.BookTable.Cols.AUTHOR,edit_author.getText().toString());
+                values.put(BookDB.BookTable.Cols.PRESS,edit_publish.getText().toString());
+                values.put(BookDB.BookTable.Cols.ISBN,edit_ISBN.getText().toString());
+                values.put(BookDB.BookTable.Cols.NOTE,edit_note.getText().toString());
+                values.put(BookDB.BookTable.Cols.URL,edit_website.getText().toString());
+                values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
+                String where = BookDB.BookTable.Cols.ID + " = " + MainActivity.books.get(books_index).getID();
+                db.update(BookDB.BookTable.NAME,values,where,null);
+                db.close();
+                MainActivity.intent1 = 0;
+                this.finish();
+                Intent intent = new Intent(EditActivity.this,MainActivity.class);
+                startActivity(intent);
+            }
+            else{
+                Toast.makeText(EditActivity.this, "保存成功" , Toast.LENGTH_SHORT).show();
+                SQLiteDatabase db = MainActivity.helper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(BookDB.BookTable.Cols.BOOK_NAME,String.valueOf(edit_title.getText()));
+                values.put(BookDB.BookTable.Cols.AUTHOR,String.valueOf(edit_author.getText()));
+                values.put(BookDB.BookTable.Cols.PRESS,String.valueOf(edit_publish.getText()));
+                values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
+                values.put(BookDB.BookTable.Cols.PUBLISHTIME_MONTH," ");
+                values.put(BookDB.BookTable.Cols.ISBN,String.valueOf(edit_ISBN.getText()));
+                values.put(BookDB.BookTable.Cols.STATUS,Book.NOTSETUP);
+                values.put(BookDB.BookTable.Cols.BOOKSHELF,"默认书架");
+                values.put(BookDB.BookTable.Cols.NOTE,String.valueOf(edit_note.getText()));
+                values.put(BookDB.BookTable.Cols.URL,"http://119.29.3.47:9001/book/worm/isbn?isbn=");
+                values.put(BookDB.BookTable.Cols.IMAGEURL,image);
+                db.insert(BookDB.BookTable.NAME,null,values);
+                db.close();
+                MainActivity.intent1 = 0;
 
-            /*Intent intent = new Intent(EditActivity.this,MainActivity.class);
-            startActivity(intent);*/
-            this.finish();
+                //Intent intent = new Intent(EditActivity.this,MainActivity.class);
+                //startActivity(intent);
+                this.finish();
+            }
+
             return true;
         }
 
