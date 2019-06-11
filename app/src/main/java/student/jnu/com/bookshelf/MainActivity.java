@@ -1,8 +1,6 @@
 package student.jnu.com.bookshelf;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,8 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Base64;
 import android.view.ContextMenu;
@@ -36,21 +32,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 
-import org.json.JSONObject;
-
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.*;
@@ -180,7 +166,7 @@ public class MainActivity extends AppCompatActivity
         final FloatingActionButton batchAdd = (FloatingActionButton) findViewById(R.id.batchAdd);
         final FloatingActionButton singleAdd = (FloatingActionButton) findViewById(R.id.singleAdd);
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        final FloatingActionButton fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+        final FloatingActionButton fab1 = (FloatingActionButton) findViewById(R.id.fab2);
         final Button writeAdd1=(Button)findViewById(R.id.writeAdd1) ;
         final FloatingActionButton writeAdd = (FloatingActionButton) findViewById(R.id.writeAdd);
         final Button writeISBN1=(Button)findViewById(R.id.writeISBN1) ;
