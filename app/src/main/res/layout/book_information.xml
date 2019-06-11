@@ -271,7 +271,7 @@
                     android:id="@+id/spiner1"
                     android:layout_width="216dp"
                     android:layout_height="36dp"
-                    android:entries="@drawable/spinner_read"
+
 
                     app:layout_editor_absoluteX="100dp"
                     app:layout_editor_absoluteY="278dp"
