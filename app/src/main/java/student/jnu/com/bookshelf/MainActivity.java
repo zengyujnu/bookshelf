@@ -32,10 +32,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+/*import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
-import com.yzq.zxinglibrary.common.Constant;
+import com.yzq.zxinglibrary.common.Constant;*/
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        /*super.onActivityResult(requestCode, resultCode, data);
         // 扫描二维码/条码回传
         if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
             if (data != null) {
@@ -90,16 +93,15 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
 
             }
-        }
+        }*/
         // 获取解析结果
-        /*IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
                 Toast.makeText(this, "取消扫描", Toast.LENGTH_LONG).show();
             } else {
                 //Toast.makeText(this, "ISBN:" + result.getContents(), Toast.LENGTH_LONG).show();
                 //edit_ISBN.setText(result.getContents());//单次扫描
-
                 intent1 = 1;
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, EditActivity.class);
@@ -108,22 +110,22 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
-               if (isMore_add) {//多次扫码
-                    /*isMore_textView.setText(isMore_textView.getText() + "  " + result.getContents());
-                    save(isMore_textView.getText().toString());*/
-                    // 创建IntentIntegrator对象
-                    /*IntentIntegrator intentIntegrator = new IntentIntegrator(this);
-                    //设置超时关闭扫描界面
+            if (isMore_add) {//多次扫码
+                /*isMore_textView.setText(isMore_textView.getText() + "  " + result.getContents());
+                save(isMore_textView.getText().toString());*/
+                // 创建IntentIntegrator对象
+                IntentIntegrator intentIntegrator = new IntentIntegrator(this);
+                //设置超时关闭扫描界面
 //                intentIntegrator.setTimeout(10000);
-                    intentIntegrator.setCaptureActivity(MyCustomCaptureActivity.class);
-                    intentIntegrator.initiateScan();*/
+                intentIntegrator.setCaptureActivity(MyCustomCaptureActivity.class);
+                intentIntegrator.initiateScan();
 
-                /*}
+            }
 
 
         } else {
             super.onActivityResult(requestCode, resultCode, data);
-        }*/
+        }
     }
 
     @Override
@@ -239,13 +241,13 @@ public class MainActivity extends AppCompatActivity
                 fab.show();
                 fab1.hide();
                 // 创建IntentIntegrator对象
-                /*IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
+                IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
                 //设置超时关闭扫描界面
 //                intentIntegrator.setTimeout(10000);
                 intentIntegrator.setCaptureActivity(MyCustomCaptureActivity.class);
                 intentIntegrator.setPrompt("请对准二维码");// 设置提示语
                 intentIntegrator.initiateScan();
-                isMore_add = true;*/
+                isMore_add = true;
 
             }
         });
@@ -263,14 +265,14 @@ public class MainActivity extends AppCompatActivity
                 writeAdd.hide();
                 fab.show();
                 fab1.hide();
-                Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+                //Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
                 /*ZxingConfig是配置类
                  *可以设置是否显示底部布局，闪光灯，相册，
                  * 是否播放提示音  震动
                  * 设置扫描框颜色等
                  * 也可以不传这个参数
                  * */
-                ZxingConfig config = new ZxingConfig();
+                /*ZxingConfig config = new ZxingConfig();
                 config.setPlayBeep(true);//是否播放扫描声音 默认为true
                 config.setShake(true);//是否震动  默认为true
                 config.setDecodeBarCode(true);//是否扫描条形码 默认为true
@@ -279,7 +281,13 @@ public class MainActivity extends AppCompatActivity
                 config.setScanLineColor(R.color.colorWhite);//设置扫描线的颜色 默认白色
                 config.setFullScreenScan(false);//是否全屏扫描  默认为true  设为false则只会在扫描框中扫描
                 intent.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                startActivityForResult(intent, REQUEST_CODE_SCAN);
+                startActivityForResult(intent, REQUEST_CODE_SCAN);*/
+                // 创建IntentIntegrator对象
+                IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
+                //设置超时关闭扫描界面
+//                intentIntegrator.setTimeout(10000);
+                intentIntegrator.setCaptureActivity(CustomCaptureActivity.class);
+                intentIntegrator.initiateScan();
                 isMore_add = false;
             }
         });
@@ -349,13 +357,13 @@ public class MainActivity extends AppCompatActivity
                 fab.show();
                 fab1.hide();
                 // 创建IntentIntegrator对象
-                /*IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
+                IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
                 //设置超时关闭扫描界面
 //                intentIntegrator.setTimeout(10000);
                 intentIntegrator.setCaptureActivity(MyCustomCaptureActivity.class);
                 intentIntegrator.setPrompt("请对准二维码");// 设置提示语
                 intentIntegrator.initiateScan();
-                isMore_add = true;*/
+                isMore_add = true;
             }
         });
 
@@ -372,14 +380,14 @@ public class MainActivity extends AppCompatActivity
                 writeAdd.hide();
                 fab.show();
                 fab1.hide();
-                Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+                //Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
                 /*ZxingConfig是配置类
                  *可以设置是否显示底部布局，闪光灯，相册，
                  * 是否播放提示音  震动
                  * 设置扫描框颜色等
                  * 也可以不传这个参数
                  * */
-                ZxingConfig config = new ZxingConfig();
+                /*ZxingConfig config = new ZxingConfig();
                 config.setPlayBeep(true);//是否播放扫描声音 默认为true
                 config.setShake(true);//是否震动  默认为true
                 config.setDecodeBarCode(true);//是否扫描条形码 默认为true
@@ -389,6 +397,13 @@ public class MainActivity extends AppCompatActivity
                 config.setFullScreenScan(false);//是否全屏扫描  默认为true  设为false则只会在扫描框中扫描
                 intent.putExtra(Constant.INTENT_ZXING_CONFIG, config);
                 startActivityForResult(intent, REQUEST_CODE_SCAN);
+                isMore_add = false;*/
+                // 创建IntentIntegrator对象
+                IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
+                //设置超时关闭扫描界面
+//                intentIntegrator.setTimeout(10000);
+                intentIntegrator.setCaptureActivity(CustomCaptureActivity.class);
+                intentIntegrator.initiateScan();
                 isMore_add = false;
             }
         });

@@ -35,6 +35,8 @@
             android:label="about"/>
         <activity android:name=".BookDetailActivity" />
         <activity android:name=".EditActivity" />
+        <activity android:name=".CustomCaptureActivity" />
+        <activity android:name=".MyCustomCaptureActivity" />
     </application>
 
 </manifest>
