@@ -210,6 +210,7 @@ public class MainActivity extends AppCompatActivity
                 addTOBooks();
             }
         }
+
         /*ContentValues values = new ContentValues();
         values.put(BookDB.BookShelfTable.Cols.BOOKSHELF_NAME,"默认书架");
         db.insert(BookDB.BookShelfTable.NAME,null,values);*/
@@ -217,6 +218,13 @@ public class MainActivity extends AppCompatActivity
         bookshelfs.clear();
         bookshelfs.add("所有");
         cursor1 = db.query(BookDB.BookShelfTable.NAME,null,null,null,null,null,null);
+
+        if(cursor1.getCount()==0){
+            ContentValues values = new ContentValues();
+            values.put(BookDB.BookShelfTable.Cols.BOOKSHELF_NAME,"默认书架");
+            db.insert(BookDB.BookShelfTable.NAME,null,values);
+            cursor1 = db.query(BookDB.BookShelfTable.NAME,null,null,null,null,null,null);
+        }
         while(!cursor1.isLast()){
             cursor1.moveToNext();
             bookshelfs.add(cursor1.getString(0));
