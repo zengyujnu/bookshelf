@@ -25,6 +25,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -320,6 +322,24 @@ public class EditActivity extends AppCompatActivity{
         return true;
     }
 
+    public void save(){
+        SQLiteDatabase db = MainActivity.helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(BookDB.BookTable.Cols.BOOK_NAME,String.valueOf(edit_title.getText()));
+        values.put(BookDB.BookTable.Cols.AUTHOR,String.valueOf(edit_author.getText()));
+        values.put(BookDB.BookTable.Cols.PRESS,String.valueOf(edit_publish.getText()));
+        values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
+        values.put(BookDB.BookTable.Cols.PUBLISHTIME_MONTH," ");
+        values.put(BookDB.BookTable.Cols.ISBN,String.valueOf(edit_ISBN.getText()));
+        values.put(BookDB.BookTable.Cols.STATUS,Book.NOTSETUP);
+        values.put(BookDB.BookTable.Cols.BOOKSHELF,"默认书架");
+        values.put(BookDB.BookTable.Cols.NOTE,String.valueOf(edit_note.getText()));
+        values.put(BookDB.BookTable.Cols.URL,"http://119.29.3.47:9001/book/worm/isbn?isbn=");
+        values.put(BookDB.BookTable.Cols.IMAGEURL,image);
+        db.insert(BookDB.BookTable.NAME,null,values);
+        db.close();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -350,21 +370,7 @@ public class EditActivity extends AppCompatActivity{
             }
             else{
                 Toast.makeText(EditActivity.this, "保存成功" , Toast.LENGTH_SHORT).show();
-                SQLiteDatabase db = MainActivity.helper.getWritableDatabase();
-                ContentValues values = new ContentValues();
-                values.put(BookDB.BookTable.Cols.BOOK_NAME,String.valueOf(edit_title.getText()));
-                values.put(BookDB.BookTable.Cols.AUTHOR,String.valueOf(edit_author.getText()));
-                values.put(BookDB.BookTable.Cols.PRESS,String.valueOf(edit_publish.getText()));
-                values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
-                values.put(BookDB.BookTable.Cols.PUBLISHTIME_MONTH," ");
-                values.put(BookDB.BookTable.Cols.ISBN,String.valueOf(edit_ISBN.getText()));
-                values.put(BookDB.BookTable.Cols.STATUS,Book.NOTSETUP);
-                values.put(BookDB.BookTable.Cols.BOOKSHELF,"默认书架");
-                values.put(BookDB.BookTable.Cols.NOTE,String.valueOf(edit_note.getText()));
-                values.put(BookDB.BookTable.Cols.URL,"http://119.29.3.47:9001/book/worm/isbn?isbn=");
-                values.put(BookDB.BookTable.Cols.IMAGEURL,image);
-                db.insert(BookDB.BookTable.NAME,null,values);
-                db.close();
+                save();
                 MainActivity.intent1 = 0;
 
                 //Intent intent = new Intent(EditActivity.this,MainActivity.class);

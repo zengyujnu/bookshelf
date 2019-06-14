@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity
     SQLiteDatabase db;
     public boolean isMore_add;
     static int intent1 = 0;
+    static String isbn = null;
     String[] items = new String[] { "作者", "标题", "出版社","出版时间" };
 
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -97,29 +98,39 @@ public class MainActivity extends AppCompatActivity
         // 获取解析结果
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
-            if (result.getContents() == null) {
-                Toast.makeText(this, "取消扫描", Toast.LENGTH_LONG).show();
-            } else {
-                //Toast.makeText(this, "ISBN:" + result.getContents(), Toast.LENGTH_LONG).show();
-                //edit_ISBN.setText(result.getContents());//单次扫描
-                intent1 = 1;
+            if(!isMore_add){
+                if (result.getContents() == null) {
+                    Toast.makeText(this, "取消扫描", Toast.LENGTH_LONG).show();
+                } else {
+                    //Toast.makeText(this, "ISBN:" + result.getContents(), Toast.LENGTH_LONG).show();
+                    //edit_ISBN.setText(result.getContents());//单次扫描
+                    intent1 = 1;
+                    Intent intent = new Intent();
+                    intent.setClass(MainActivity.this, EditActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("isbn", result.getContents());
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            }
+            else {//多次扫码
+                /*isMore_textView.setText(isMore_textView.getText() + "  " + result.getContents());
+                save(isMore_textView.getText().toString());*/
+                // 创建IntentIntegrator对象
+                /*intent1 = 3;
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, EditActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("isbn", result.getContents());
                 intent.putExtras(bundle);
-                startActivity(intent);
-            }
-            if (isMore_add) {//多次扫码
-                /*isMore_textView.setText(isMore_textView.getText() + "  " + result.getContents());
-                save(isMore_textView.getText().toString());*/
+                startActivity(intent);*/
                 // 创建IntentIntegrator对象
+                isbn = result.getContents();
                 IntentIntegrator intentIntegrator = new IntentIntegrator(this);
                 //设置超时关闭扫描界面
 //                intentIntegrator.setTimeout(10000);
                 intentIntegrator.setCaptureActivity(MyCustomCaptureActivity.class);
                 intentIntegrator.initiateScan();
-
             }
 
 
@@ -133,7 +144,16 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
+        if(intent1 == 3){
+            // 创建IntentIntegrator对象
+            IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
+            //设置超时关闭扫描界面
+//                intentIntegrator.setTimeout(10000);
+            intentIntegrator.setCaptureActivity(MyCustomCaptureActivity.class);
+            intentIntegrator.setPrompt("请对准二维码");// 设置提示语
+            intentIntegrator.initiateScan();
+            isMore_add = true;
+        }
         booklist = (ListView)findViewById(R.id.BookList);
 
         bookListAdapter = new BookListAdapter();
@@ -241,11 +261,12 @@ public class MainActivity extends AppCompatActivity
                 fab.show();
                 fab1.hide();
                 // 创建IntentIntegrator对象
+                //MyCustomCaptureActivity.addsize = 0;
                 IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
                 //设置超时关闭扫描界面
 //                intentIntegrator.setTimeout(10000);
                 intentIntegrator.setCaptureActivity(MyCustomCaptureActivity.class);
-                intentIntegrator.setPrompt("请对准二维码");// 设置提示语
+                intentIntegrator.setPrompt("请对准条形码");// 设置提示语
                 intentIntegrator.initiateScan();
                 isMore_add = true;
 
@@ -357,6 +378,7 @@ public class MainActivity extends AppCompatActivity
                 fab.show();
                 fab1.hide();
                 // 创建IntentIntegrator对象
+                //MyCustomCaptureActivity.addsize = 0;
                 IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
                 //设置超时关闭扫描界面
 //                intentIntegrator.setTimeout(10000);

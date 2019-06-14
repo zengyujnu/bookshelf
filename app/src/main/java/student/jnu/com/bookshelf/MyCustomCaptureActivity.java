@@ -1,38 +1,131 @@
 package student.jnu.com.bookshelf;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import static student.jnu.com.bookshelf.MainActivity.helper;
 
 public class MyCustomCaptureActivity extends AppCompatActivity {
     private CaptureManager capture;
     private DecoratedBarcodeView barcodeScannerView;
-    //private EditText ISBN_SHOW;
-    //private Button ISBN;
-    private boolean isShow=false;
+    ListView booklist;
+    static List<Book> books = new ArrayList<Book>();
+
+    BookListAdapter bookListAdapter;
+    SQLiteDatabase db;
+
+    public class BookListAdapter extends BaseAdapter {
+
+        //将cursor的内容添加到Books中
+        public void addTOBooks(final BookCollection bookCollection) {
+            //book.setID(cursor.getInt(0));
+            Book book = new Book();
+            book.setBookName(bookCollection.getBook());
+            book.setAuthor(bookCollection.getAuthor());
+            book.setPress(bookCollection.getPublisher());
+            book.setPublishTime_Year(Integer.valueOf(bookCollection.getYear()));
+            book.setPublishTime_Month(0);
+            book.setISBN(MainActivity.isbn);
+            //book.setStatus(cursor.getInt(7));
+            //book.setBookshelf(cursor.getString(8));
+            //book.setNote(cursor.getString(9));
+            book.setUrl("http://119.29.3.47:9001/book/worm/isbn?isbn=");
+            book.setImageUrl(bookCollection.getImgSrc());
+            books.add(book);
+        }
+        @Override
+        public int getCount() {
+            return books.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = LayoutInflater.from(MyCustomCaptureActivity.this).inflate(R.layout.listview_item, parent, false);
+            ImageView bookImage = (ImageView) view.findViewById(R.id.bookImage);
+            TextView bookname_text = (TextView) view.findViewById(R.id.bookName_text);
+            TextView authorPress_name = (TextView) view.findViewById(R.id.authorPress_text);
+            TextView publishTime_text = (TextView) view.findViewById(R.id.publishTime_text);
+            try {
+                byte[] decode = android.util.Base64.decode(books.get(position).getImageUrl(), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+                bookImage.setImageBitmap(bitmap);
+                //bookImage.setImageResource(R.mipmap.ic_launcher);
+            } catch (Exception E) {
+            }
+
+            bookname_text.setText(books.get(position).getBookName());
+            authorPress_name.setText(books.get(position).getAuthor() + "    " + books.get(position).getPress());
+            //publishTime_text.setText(String.valueOf(books.get(position).getPublishTime_Year())+"-"+String.valueOf(books.get(position).getPublishTime_Month()));
+            publishTime_text.setText(String.valueOf(books.get(position).getPublishTime_Year()) + "  ");
+            return view;
+            //return null;
+        }
+    }
+
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        //AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        menu.add(0, 1, 0, "删除");
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        // TODO Auto-generated method stub
+        AdapterView.AdapterContextMenuInfo itemInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        /*String where = BookDB.BookTable.Cols.ID + "=" + books.get(itemInfo.position).getID();
+        db.delete(BookDB.BookTable.NAME, where, null);*/
+        books.remove(itemInfo.position);
+        bookListAdapter.notifyDataSetChanged();
+        return super.onContextItemSelected(item);
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -48,29 +141,23 @@ public class MyCustomCaptureActivity extends AppCompatActivity {
                 ediglog();
             }
         });
-        //ISBN= (Button) findViewById(R.id.ISBN);
-        //ISBN_SHOW=(EditText)findViewById(R.id.ISBN_SHOW);
+
 
         capture = new CaptureManager(this, barcodeScannerView);
         capture.initializeFromIntent(getIntent(), savedInstanceState);
         capture.decode();
+        booklist = (ListView) findViewById(R.id.BookList);
 
-        /*ISBN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //从文件中读取文本信息
-                String inputText=load();
-                ISBN_SHOW.setText(inputText);
-            }
-        });*/
-//        //从文件中读取文本信息
-//        String inputText=load();
-//        ISBN_SHOW.setText(inputText);
-
+        bookListAdapter = new BookListAdapter();
+        booklist.setAdapter(bookListAdapter);
+        bookListAdapter.notifyDataSetChanged();
+        registerForContextMenu(booklist);
+        if (MainActivity.isbn != null) {
+            handle(MainActivity.isbn);
+        }
     }
 
-    public void ediglog()
-    {
+    public void ediglog() {
         AlertDialog dialog = new AlertDialog.Builder(this)
 
                 .setTitle("舍弃书籍")//设置对话框的标题
@@ -79,22 +166,42 @@ public class MyCustomCaptureActivity extends AppCompatActivity {
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
                         dialog.dismiss();
                     }
                 })
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        MainActivity.intent1 = 0;
                         dialog.dismiss();
-                        Intent intent = new Intent(MyCustomCaptureActivity.this,MainActivity.class);
+                        books.clear();
+                        Intent intent = new Intent(MyCustomCaptureActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
                     }
                 }).create();
         dialog.show();
 
+    }
+
+    public void addtoDB(){
+        int position ;
+        for(position=0;position<books.size();position++){
+            SQLiteDatabase db = MainActivity.helper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(BookDB.BookTable.Cols.BOOK_NAME, books.get(position).getBookName());
+            values.put(BookDB.BookTable.Cols.AUTHOR, books.get(position).getAuthor());
+            values.put(BookDB.BookTable.Cols.PRESS, books.get(position).getPress());
+            values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR, books.get(position).getPublishTime_Year());
+            values.put(BookDB.BookTable.Cols.PUBLISHTIME_MONTH, "");
+            values.put(BookDB.BookTable.Cols.ISBN, books.get(position).getISBN());
+            values.put(BookDB.BookTable.Cols.STATUS, Book.NOTSETUP);
+            values.put(BookDB.BookTable.Cols.BOOKSHELF, "默认书架");
+            values.put(BookDB.BookTable.Cols.NOTE, books.get(position).getNote());
+            values.put(BookDB.BookTable.Cols.URL, books.get(position).getUrl());
+            values.put(BookDB.BookTable.Cols.IMAGEURL, books.get(position).getImageUrl());
+            db.insert(BookDB.BookTable.NAME, null, values);
+            db.close();
+        }
     }
 
     @Override
@@ -130,31 +237,6 @@ public class MyCustomCaptureActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return barcodeScannerView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
-    public String load(){
-        FileInputStream in=null;
-        BufferedReader reader=null;
-        StringBuilder content=new StringBuilder();
-        try{
-            in=openFileInput("data");
-            reader=new BufferedReader(new InputStreamReader(in));
-            String line="";
-            while((line=reader.readLine())!=null){
-                content.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if(reader!=null){
-                try{
-                    reader.close();
-                }catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return content.toString();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -172,52 +254,32 @@ public class MyCustomCaptureActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.save) {
-            if(MainActivity.intent1 == 2){
-                /*Toast.makeText(EditActivity.this, "修改成功" , Toast.LENGTH_SHORT).show();
-                SQLiteDatabase db = MainActivity.helper.getWritableDatabase();
-                ContentValues values = new ContentValues();
-                values.put(BookDB.BookTable.Cols.BOOK_NAME,edit_title.getText().toString());
-                values.put(BookDB.BookTable.Cols.AUTHOR,edit_author.getText().toString());
-                values.put(BookDB.BookTable.Cols.PRESS,edit_publish.getText().toString());
-                values.put(BookDB.BookTable.Cols.ISBN,edit_ISBN.getText().toString());
-                values.put(BookDB.BookTable.Cols.NOTE,edit_note.getText().toString());
-                values.put(BookDB.BookTable.Cols.URL,edit_website.getText().toString());
-                values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
-                String where = BookDB.BookTable.Cols.ID + " = " + MainActivity.books.get(books_index).getID();
-                db.update(BookDB.BookTable.NAME,values,where,null);
-                db.close();
-                MainActivity.intent1 = 0;
-                this.finish();
-                Intent intent = new Intent(EditActivity.this,MainActivity.class);
-                startActivity(intent);*/
-            }
-            else{
-                /*Toast.makeText(EditActivity.this, "保存成功" , Toast.LENGTH_SHORT).show();
-                SQLiteDatabase db = MainActivity.helper.getWritableDatabase();
-                ContentValues values = new ContentValues();
-                values.put(BookDB.BookTable.Cols.BOOK_NAME,String.valueOf(edit_title.getText()));
-                values.put(BookDB.BookTable.Cols.AUTHOR,String.valueOf(edit_author.getText()));
-                values.put(BookDB.BookTable.Cols.PRESS,String.valueOf(edit_publish.getText()));
-                values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
-                values.put(BookDB.BookTable.Cols.PUBLISHTIME_MONTH," ");
-                values.put(BookDB.BookTable.Cols.ISBN,String.valueOf(edit_ISBN.getText()));
-                values.put(BookDB.BookTable.Cols.STATUS,Book.NOTSETUP);
-                values.put(BookDB.BookTable.Cols.BOOKSHELF,"默认书架");
-                values.put(BookDB.BookTable.Cols.NOTE,String.valueOf(edit_note.getText()));
-                values.put(BookDB.BookTable.Cols.URL,"http://119.29.3.47:9001/book/worm/isbn?isbn=");
-                values.put(BookDB.BookTable.Cols.IMAGEURL,image);
-                db.insert(BookDB.BookTable.NAME,null,values);
-                db.close();
-                MainActivity.intent1 = 0;
+            addtoDB();
+            books.clear();
+            Intent intent = new Intent(MyCustomCaptureActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
 
-                //Intent intent = new Intent(EditActivity.this,MainActivity.class);
-                //startActivity(intent);
-                this.finish();*/
-            }
 
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void handle(final String ISBN) {
+        final BookCollection bookCollection = new BookCollection();
+        @SuppressLint("HandlerLeak")
+        Handler handler = new Handler() {
+            public void handleMessage(Message msg) {
+                try {
+                    bookListAdapter.addTOBooks(bookCollection);
+                    bookListAdapter.notifyDataSetChanged();
+                    MainActivity.isbn = null;
+                } catch (Exception E) {
+                }
+            }
+        };
+        bookCollection.download(handler, ISBN);
     }
 }

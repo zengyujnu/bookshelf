@@ -11,7 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class DownImage {
-    public void download(final ImageView imageView, final String ISBN,final String path){
+    public void download(final ImageView imageView ,final String path){
         new Thread(new Runnable() {
             @Override
             public void run() {
