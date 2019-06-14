@@ -33,6 +33,10 @@ public class DBConnection extends SQLiteOpenHelper {
                 + BookDB.BookTable.Cols.URL + " text,"
                 + BookDB.BookTable.Cols.IMAGEURL + " text);";
         db.execSQL(sql);
+
+        sql = "CREATE TABLE "+ BookDB.BookShelfTable.NAME +" ("
+                +BookDB.BookShelfTable.Cols.BOOKSHELF_NAME + " text);";
+        db.execSQL(sql);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package student.jnu.com.bookshelf;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,6 +10,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -48,7 +52,7 @@ import java.util.ArrayList;
 import java.util.*;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
     private MenuItem renameLabelItem ;
     private MenuItem deleteLabelItem;
     private MenuItem renameBookshelfItem;
@@ -63,14 +67,24 @@ public class MainActivity extends AppCompatActivity
     private int drawerItemId = 1;
     private NavigationView navigationView;
     private int REQUEST_CODE_SCAN = 111;
+
+    private ArrayAdapter<String> arrayAdapter;
+    private Spinner shelfChoose;
+    private String bookShelfName;
+    private int bookShelfPosition;
+    private Menu allMenu;
+
+
     static List<Book> books = new ArrayList<>();
+    static List<String> bookshelfs = new ArrayList<>();
     static DBConnection helper;
-    public static List<String>allbookshelf;
+
+
     private ArrayAdapter<String> adapter;
     private Toolbar toolbar;
     ListView booklist;
     BookListAdapter bookListAdapter;
-    Cursor cursor;
+    Cursor cursor,cursor1;
     SQLiteDatabase db;
     public boolean isMore_add;
     static int intent1 = 0;
@@ -196,6 +210,20 @@ public class MainActivity extends AppCompatActivity
                 addTOBooks();
             }
         }
+        /*ContentValues values = new ContentValues();
+        values.put(BookDB.BookShelfTable.Cols.BOOKSHELF_NAME,"默认书架");
+        db.insert(BookDB.BookShelfTable.NAME,null,values);*/
+
+        bookshelfs.clear();
+        bookshelfs.add("所有");
+        cursor1 = db.query(BookDB.BookShelfTable.NAME,null,null,null,null,null,null);
+        while(!cursor1.isLast()){
+            cursor1.moveToNext();
+            bookshelfs.add(cursor1.getString(0));
+        }
+
+        bookShelfName = "所有";
+        bookShelfPosition = 0;
 
          toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -457,6 +485,7 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         onPrepareOptionsDrawerMenu(navigationView.getMenu());
+        //deleteDatabase(DBConnection.Database_name);
     }
 
     @Override
@@ -469,14 +498,123 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //ActionBar菜单显示前执行的函数，设置rename_bookshelf和delete_bookshelf隐藏
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+        allMenu = menu;
+        setDelAndRenameVisible(false);
+        setDelAndRenameVisible(true);
+        return super.onPrepareOptionsMenu(menu);
+    }
+    //ActionBar的按钮相关
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.main, menu);
-        Spinner shelfChoose = (Spinner)menu.findItem(R.id.action_arrow).setActionView(R.layout.spinner).getActionView().findViewById(R.id.shelfType);
-        shelfChoose.setOnItemSelectedListener(this);
-//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.shelf,R.layout.dropdown);
-        shelfChoose.setAdapter(adapter);
+        //书架下拉选择框Spinner
+        shelfChoose = (Spinner)menu.findItem(R.id.action_arrow).setActionView(R.layout.spinner).getActionView().findViewById(R.id.shelfType);
+
+        arrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item_seleted, bookshelfs);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        shelfChoose.setAdapter(arrayAdapter);
+        shelfChoose.setSelection(0);
+        shelfChoose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                bookShelfName = bookshelfs.get(position);
+                bookShelfPosition = position;
+                if(position==0){
+                    setSortVisible(true);
+                    setDelAndRenameVisible(false);
+                    cursor = db.query(BookDB.BookTable.NAME,null,null,null,null,null,null);
+                    books.clear();
+                    if(cursor.getCount()!=0){
+                        while (!cursor.isLast()){
+                            cursor.moveToNext();
+                            addTOBooks();
+                        }
+                    }
+                    bookListAdapter.notifyDataSetChanged();
+                }else{
+                    setSortVisible(false);
+                    setDelAndRenameVisible(true);
+                    cursor = db.query(BookDB.BookTable.NAME,null,null,null,null,null,null);
+                    books.clear();
+                    if(cursor.getCount()!=0){
+                        while (!cursor.isLast()){
+                            cursor.moveToNext();
+                            if(cursor.getString(8).equals(bookShelfName))
+                                addTOBooks();
+                        }
+                    }
+                    bookListAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        //搜索框
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        final EditText editText = (EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        editText.setHintTextColor(ContextCompat.getColor(this, R.color.colorWhite));
+        editText.setTextColor(ContextCompat.getColor(this, R.color.colorWhite));
+
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            //提交搜索执行的事件
+            public boolean onQueryTextSubmit(String s) {
+                //Toast.makeText(MainActivity.this,"触发搜索功能",Toast.LENGTH_SHORT).show();
+                String key = editText.getText().toString();
+                List<Book> tmpBooks = new ArrayList<>();
+                for(Book book:books){
+                    if(book.getBookName().contains(key)
+                            || book.getAuthor().contains(key)
+                            || book.getPress().contains(key))
+                        tmpBooks.add(book);
+                }
+                books.clear();
+                books.addAll(tmpBooks);
+                bookListAdapter.notifyDataSetChanged();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
+        //取消搜索后执行的事件
+        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                cursor = db.query(BookDB.BookTable.NAME,null,null,null,null,null,null);
+                books.clear();
+                if(cursor.getCount()!=0){
+                    if(bookShelfName.equals("所有")){
+                        while (!cursor.isLast()){
+                            cursor.moveToNext();
+                            addTOBooks();
+                        }
+                    }else{
+                        while (!cursor.isLast()){
+                            cursor.moveToNext();
+                            if(cursor.getString(8).equals(bookShelfName))
+                                addTOBooks();
+                        }
+                    }
+                }
+                bookListAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
+
         return true;
     }
 
@@ -543,6 +681,63 @@ public class MainActivity extends AppCompatActivity
             dialog.show();
             return true;
         }
+        switch (id){
+            case R.id.rename_bookshelf:
+                //Toast.makeText(MainActivity.this,"点击重命名书架",Toast.LENGTH_SHORT).show();
+                reNameBookShelf();
+                break;
+            case R.id.delete_bookshelf:
+                //Toast.makeText(MainActivity.this,"点击删除书架",Toast.LENGTH_SHORT).show();
+                AlertDialog dialog = new AlertDialog.Builder(this)
+
+                        .setTitle("删除书架")//设置对话框的标题
+                        .setMessage("我们将删除此书架，上面的所有书籍都会移至默认书架，书籍不会被删除。")//设置对话框的内容
+                        //设置对话框的按钮
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                ContentValues values = new ContentValues();
+                                values.put(BookDB.BookTable.Cols.BOOKSHELF,"默认书架");
+                                for(Book x:books){
+                                    //修改数据库中的信息
+                                    String where = BookDB.BookTable.Cols.ID + " = " + x.getID();
+                                    db.update(BookDB.BookTable.NAME,values,where,null);
+                                    x.setBookshelf("默认书架");//更改List(books)的数据
+                                }
+
+
+                                bookshelfs.remove(bookShelfPosition); //删除List（bookshelfs）的数据
+                                //删除数据库中的书架
+                                String where = BookDB.BookShelfTable.Cols.BOOKSHELF_NAME + "=" + "\""+bookShelfName+ "\"";
+                                db.delete(BookDB.BookShelfTable.NAME,where,null);
+
+                                ((BaseAdapter)shelfChoose.getAdapter()).notifyDataSetChanged();
+                                shelfChoose.setSelection(0);
+                                setSortVisible(true);
+                                setDelAndRenameVisible(false);
+                                cursor = db.query(BookDB.BookTable.NAME,null,null,null,null,null,null);
+                                books.clear();
+                                if(cursor.getCount()!=0){
+                                    while (!cursor.isLast()){
+                                        cursor.moveToNext();
+                                        addTOBooks();
+                                    }
+                                }
+                                bookListAdapter.notifyDataSetChanged();
+                                bookShelfName = "所有";
+                                dialog.dismiss();
+                            }
+                        }).create();
+                dialog.show();
+                break;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -574,15 +769,7 @@ public class MainActivity extends AppCompatActivity
 //        return true;
 //    }
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-
-    }
 
     /*private class mItemClick implements android.widget.AdapterView.OnItemClickListener {
         @Override
@@ -690,12 +877,21 @@ public class MainActivity extends AppCompatActivity
         db = helper.getWritableDatabase();
         cursor = db.query(BookDB.BookTable.NAME,null,null,null,null,null,null);
         if(cursor.getCount()!=0){
-            while (!cursor.isLast()){
-                cursor.moveToNext();
-                addTOBooks();
+            if(bookShelfName.equals("所有")){
+                while (!cursor.isLast()){
+                    cursor.moveToNext();
+                    addTOBooks();
+                }
+            }else{
+                while (!cursor.isLast()){
+                    cursor.moveToNext();
+                    if(cursor.getString(8).equals(bookShelfName))
+                        addTOBooks();
+                }
             }
         }
         bookListAdapter.notifyDataSetChanged();
+        ((BaseAdapter)shelfChoose.getAdapter()).notifyDataSetChanged();
     }
 
     /*public void save(String inputText) {
@@ -866,6 +1062,83 @@ public class MainActivity extends AppCompatActivity
         menu.add(2,6,4,R.string.drawer_item_about).setIcon(R.drawable.ic_about);
         addLabel(menu);
         return true;
+    }
+
+    /**
+     * @TODO 设置排序optionMenu的显示与隐藏
+     * @param isShow true表示显示 false表示隐藏
+     */
+    private void setSortVisible(boolean isShow){
+        if(allMenu!=null){
+            for (int i = 0; i < allMenu.size(); i++){
+                if(allMenu.getItem(i).getItemId()==R.id.action_sort) {
+                    allMenu.getItem(i).setVisible(isShow);
+                    allMenu.getItem(i).setEnabled(isShow);
+                }
+            }
+        }
+    }
+
+    /**
+     * @TODO 设置删除书架和重命名书架的optionMenu的显示与隐藏
+     * @param isShow true表示显示 false表示隐藏
+     */
+    private void setDelAndRenameVisible(boolean isShow){
+        if(allMenu!=null){
+            for (int i = 0; i < allMenu.size(); i++){
+                if(allMenu.getItem(i).getItemId()==R.id.rename_bookshelf || allMenu.getItem(i).getItemId()==R.id.delete_bookshelf) {
+                    allMenu.getItem(i).setVisible(isShow);
+                    allMenu.getItem(i).setEnabled(isShow);
+                }
+            }
+        }
+    }
+
+    /**
+     * @TODO 重命名书架
+     */
+    private void reNameBookShelf()
+    {
+        View view = getLayoutInflater().inflate(R.layout.new_shelf, null);
+        final EditText editText = (EditText) view.findViewById(R.id.editText_shelfname);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+
+                .setTitle("重命名")//设置对话框的标题
+                .setView(view)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String content = editText.getText().toString();
+                        //修改bookshelfs的数据
+                        bookshelfs.set(bookShelfPosition,content);
+                        //修改数据库中书架的数据
+                        ContentValues values = new ContentValues();
+                        values.put(BookDB.BookShelfTable.Cols.BOOKSHELF_NAME,content);
+                        String where = BookDB.BookShelfTable.Cols.BOOKSHELF_NAME + " = " + "\"" + bookShelfName + "\"";
+                        db.update(BookDB.BookShelfTable.NAME,values,where,null);
+                        //修改books中每个book所属于的书架
+                        for(Book x:books)
+                            x.setBookshelf(content);
+                        //修改数据库中书本所属的书架
+
+                        if(books.size()>0){ //如果书架中有书
+                            ContentValues values1 = new ContentValues();
+                            values1    .put(BookDB.BookTable.Cols.BOOKSHELF,content);
+                            String where1 = BookDB.BookTable.Cols.ID + " = " +books.get(0).getID();
+                            db.update(BookDB.BookTable.NAME,values1,where1,null);
+                        }
+                        ((BaseAdapter)shelfChoose.getAdapter()).notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+                }).create();
+        dialog.show();
     }
 
 }

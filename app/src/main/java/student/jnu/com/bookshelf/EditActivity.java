@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -38,14 +39,17 @@ public class EditActivity extends AppCompatActivity{
     private Spinner spinner;
     private Spinner spinner_shelf;
     private Spinner spinner_label;
+    private String tmpBookShelfName;
+    private int tmpStatus;
+
     ArrayAdapter<String> adapter;
     ArrayAdapter<String> adapter_shelf;
     ArrayAdapter<String> adapter_label;
     private List<String> list;
-    int m = 1;
+
     int k=1;
-    int n;
-    int l;
+
+
     EditText edit_title ;
     EditText edit_author ;
     EditText edit_publish ;
@@ -73,7 +77,96 @@ public class EditActivity extends AppCompatActivity{
         edit_website = (EditText) findViewById(R.id.edit_website);
         imageView = (ImageView)findViewById(R.id.imageView);
 
+
+
+
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.simple_toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ediglog();
+            }
+        });
+        spinner = (Spinner) findViewById(R.id.spiner1);
+        spinner.setPrompt("阅读状态未设置");
+        initDatas();
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Toast.makeText(MainActivity.this, "您选择的状态是：" + list.get(position), Toast.LENGTH_SHORT).show();
+                switch (position){
+                    case 0:
+                        tmpStatus = Book.NOTSETUP;
+                        break;
+                    case 1:
+                        tmpStatus = Book.UNREAD;
+                        break;
+                    case 2:
+                        tmpStatus = Book.ALREADYREAD;
+                        break;
+                    case 3:
+                        tmpStatus = Book.READING;
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spinner_shelf = (Spinner) findViewById(R.id.spiner2);
+        //spinner_shelf.setPrompt("默认书架");
+        initshelfDatas();
+        adapter_shelf = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list1);
+        spinner_shelf.setAdapter(adapter_shelf);
+        spinner_shelf.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (list1.size() - 1 != position) {
+                    //Toast.makeText(MainActivity.this, "您选择的状态是：" + list1.get(position), Toast.LENGTH_SHORT).show();
+                    tmpBookShelfName = list1.get(position);
+                } else {
+                    diglog();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+
+        });
+        spinner_label = (Spinner) findViewById(R.id.spiner3);
+        // spinner_label.setPrompt("添加新标签");
+        initlabelDatas();
+        adapter_label = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list2);
+        spinner_label.setAdapter(adapter_label);
+        spinner_label.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (list2.size() - 1 != position) {
+                    //Toast.makeText(MainActivity.this, "您选择的状态是：" + list1.get(position), Toast.LENGTH_SHORT).show();
+                } else {
+                    label_diglog();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         if (MainActivity.intent1 == 1) {
+            tmpBookShelfName = "默认书架";
+            tmpStatus = Book.NOTSETUP;
+
             Bundle bundle = this.getIntent().getExtras();
             final String ISBN = bundle.getString("isbn");
             edit_ISBN.setText(ISBN);
@@ -116,107 +209,38 @@ public class EditActivity extends AppCompatActivity{
             edit_publish.setText(MainActivity.books.get(books_index).getPress());
             edit_ISBN.setText(MainActivity.books.get(books_index).getISBN());
             edit_year.setText(String.valueOf(MainActivity.books.get(books_index).getPublishTime_Year()));
-            /*switch (MainActivity.books.get(books_index).getStatus()){
-                case Book.NOTSETUP:
-                    statusText.setText("阅读状态未设置");
-                    break;
-                case Book.UNREAD:
-                    statusText.setText("未读");
-                    break;
-                case Book.READING:
-                    statusText.setText("在读读");
-                    break;
-                case Book.ALREADYREAD:
-                    statusText.setText("已读");
-                    break;
-            }*/
+
             //bookshelfText.setText(MainActivity.books.get(books_index).getBookshelf());
             edit_note.setText(MainActivity.books.get(books_index).getNote());
             //lableText.setText(BookShelfActivity.books.get(books_index).get);
             edit_website.setText(MainActivity.books.get(books_index).getUrl());
+            tmpBookShelfName =MainActivity.books.get(books_index).getBookshelf();
+            tmpStatus = MainActivity.books.get(books_index).getStatus();
+            spinner.setSelection(tmpStatus);
+            for(int i=0;i<list1.size();i++){
+                if(list1.get(i).equals(tmpBookShelfName)){
+                    spinner_shelf.setSelection(i);
+                    break;
+                }
+            }
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.simple_toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ediglog();
-            }
-        });
-        spinner = (Spinner) findViewById(R.id.spiner1);
-        spinner.setPrompt("阅读状态未设置");
-        initDatas();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Toast.makeText(MainActivity.this, "您选择的状态是：" + list.get(position), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        spinner_shelf = (Spinner) findViewById(R.id.spiner2);
-        //spinner_shelf.setPrompt("默认书架");
-        initshelfDatas();
-        adapter_shelf = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list1);
-        spinner_shelf.setAdapter(adapter_shelf);
-        spinner_shelf.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                n = list1.size();
-                if (n - 1 != position) {
-                    //Toast.makeText(MainActivity.this, "您选择的状态是：" + list1.get(position), Toast.LENGTH_SHORT).show();
-                } else {
-                    diglog();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-
-        });
-        spinner_label = (Spinner) findViewById(R.id.spiner3);
-        // spinner_label.setPrompt("添加新标签");
-        initlabelDatas();
-        adapter_label = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list2);
-        spinner_label.setAdapter(adapter_label);
-        spinner_label.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                l = list2.size();
-                if (l - 1 != position) {
-                    //Toast.makeText(MainActivity.this, "您选择的状态是：" + list1.get(position), Toast.LENGTH_SHORT).show();
-                } else {
-                    label_diglog();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
     }
 
     private void initDatas() {
         list = new ArrayList<String>();
         list.add("阅读状态未设置");
         list.add("未读");
+        list.add("在读");
         list.add("已读");
-        list.add("阅读中");
 
     }
 
     private void initshelfDatas() {
         list1 = new ArrayList<String>();
-        list1.add("默认书架");
+        for(int i=1;i<MainActivity.bookshelfs.size();i++){
+            list1.add(MainActivity.bookshelfs.get(i));
+        }
         list1.add("添加新书架");
 
 
@@ -249,8 +273,23 @@ public class EditActivity extends AppCompatActivity{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String content = editText.getText().toString();
-                        list1.add(m, content);
-                        m = m + 1;
+
+                        //把书架添加到数据库中
+                        SQLiteDatabase db = MainActivity.helper.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        values.put(BookDB.BookShelfTable.Cols.BOOKSHELF_NAME,content);
+                        db.insert(BookDB.BookShelfTable.NAME,null,values);
+                        db.close();
+
+                        //把书架添加到MainActivity的bookshelfs中
+                        MainActivity.bookshelfs.add(content);
+
+                        //把书架添加到该Activity中的list1中
+                        list1.add(list1.size()-1, content);
+                        ((BaseAdapter)spinner_shelf.getAdapter()).notifyDataSetChanged();
+                        spinner_shelf.setSelection(list1.size()-2);
+                        tmpBookShelfName = list1.get(list1.size()-2);
+
                         dialog.dismiss();
                     }
                 }).create();
@@ -328,11 +367,14 @@ public class EditActivity extends AppCompatActivity{
         values.put(BookDB.BookTable.Cols.BOOK_NAME,String.valueOf(edit_title.getText()));
         values.put(BookDB.BookTable.Cols.AUTHOR,String.valueOf(edit_author.getText()));
         values.put(BookDB.BookTable.Cols.PRESS,String.valueOf(edit_publish.getText()));
-        values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
-        values.put(BookDB.BookTable.Cols.PUBLISHTIME_MONTH," ");
+        if(edit_year.getText().toString().length()==0)
+            values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,0);
+        else
+            values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
+        values.put(BookDB.BookTable.Cols.PUBLISHTIME_MONTH,0);
         values.put(BookDB.BookTable.Cols.ISBN,String.valueOf(edit_ISBN.getText()));
-        values.put(BookDB.BookTable.Cols.STATUS,Book.NOTSETUP);
-        values.put(BookDB.BookTable.Cols.BOOKSHELF,"默认书架");
+        values.put(BookDB.BookTable.Cols.STATUS,tmpStatus);
+        values.put(BookDB.BookTable.Cols.BOOKSHELF,tmpBookShelfName);
         values.put(BookDB.BookTable.Cols.NOTE,String.valueOf(edit_note.getText()));
         values.put(BookDB.BookTable.Cols.URL,"http://119.29.3.47:9001/book/worm/isbn?isbn=");
         values.put(BookDB.BookTable.Cols.IMAGEURL,image);
@@ -359,7 +401,12 @@ public class EditActivity extends AppCompatActivity{
                 values.put(BookDB.BookTable.Cols.ISBN,edit_ISBN.getText().toString());
                 values.put(BookDB.BookTable.Cols.NOTE,edit_note.getText().toString());
                 values.put(BookDB.BookTable.Cols.URL,edit_website.getText().toString());
-                values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
+                if(edit_year.getText().toString().length()==0)
+                    values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,0);
+                else
+                    values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
+                values.put(BookDB.BookTable.Cols.STATUS,tmpStatus);
+                values.put(BookDB.BookTable.Cols.BOOKSHELF,tmpBookShelfName);
                 String where = BookDB.BookTable.Cols.ID + " = " + MainActivity.books.get(books_index).getID();
                 db.update(BookDB.BookTable.NAME,values,where,null);
                 db.close();

@@ -20,4 +20,10 @@ public class BookDB {
 
         }
     }
+    public static final class BookShelfTable{
+        public static final String NAME = "BookShelfs";
+        public static final class Cols{
+            public static final String BOOKSHELF_NAME = "bookshelf_name";
+        }
+    }
 }

@@ -73,7 +73,7 @@ public class BookDetailActivity extends AppCompatActivity{
                 statusText.setText("未读");
                 break;
             case Book.READING:
-                statusText.setText("在读读");
+                statusText.setText("在读");
                 break;
             case Book.ALREADYREAD:
                 statusText.setText("已读");
