@@ -12,10 +12,16 @@
     <string name="batchAdd">批量扫描</string>
     <string name="singleAdd">单次扫描</string>
     <string name="writeAdd">手动添加</string>
-    <string-array name="shelf">
-        <item>所有</item>
-        <item>默认书架</item>
-    </string-array>
+    <string name="drawer_item_about">关于</string>
+    <string name="drawer_item_books">书籍</string>
+    <string name="drawer_item_create_new_label">添加新标签</string>
+    <string name="drawer_item_search">搜索</string>
+    <string name="drawer_item_settings">设置</string>
+    <string name="drawer_section_label">标签</string>
+    <string name="drawer_item_donate">捐赠</string>
+    <string name="label_add_new_dialog_edit_text">输入新的标签的名称</string>
+
+
     <string name="author">作者</string>
 
     <string name="publish">出版社</string>

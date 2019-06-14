@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -30,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,10 +49,25 @@ import java.util.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemSelectedListener {
-
+    private MenuItem renameLabelItem ;
+    private MenuItem deleteLabelItem;
+    private MenuItem renameBookshelfItem;
+    private MenuItem deleteBookshelfItem ;
+    private MenuItem searchItem ;
+    private MenuItem sort ;
+    private MenuItem addBookshelfItem ;
+    boolean status=true;
+    private boolean showBookshelfMenuItem = false;
+    private boolean showLabelMenuItem = false;
+    private Spinner spinner;
+    private int drawerItemId = 1;
+    private NavigationView navigationView;
     private int REQUEST_CODE_SCAN = 111;
     static List<Book> books = new ArrayList<>();
     static DBConnection helper;
+    public static List<String>allbookshelf;
+    private ArrayAdapter<String> adapter;
+    private Toolbar toolbar;
     ListView booklist;
     BookListAdapter bookListAdapter;
     Cursor cursor;
@@ -179,7 +197,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
@@ -436,8 +454,9 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        onPrepareOptionsDrawerMenu(navigationView.getMenu());
     }
 
     @Override
@@ -456,7 +475,7 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
         Spinner shelfChoose = (Spinner)menu.findItem(R.id.action_arrow).setActionView(R.layout.spinner).getActionView().findViewById(R.id.shelfType);
         shelfChoose.setOnItemSelectedListener(this);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.shelf,R.layout.dropdown);
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.shelf,R.layout.dropdown);
         shelfChoose.setAdapter(adapter);
         return true;
     }
@@ -528,32 +547,32 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_book) {
-            // Handle the camera action
-        } else if (id == R.id.nav_search) {
-
-        } else if (id == R.id.nav_lable) {
-
-        } else if (id == R.id.nav_donate) {
-
-        } else if (id == R.id.nav_set) {
-
-        } else if (id == R.id.nav_about) {
-            Intent intent = new Intent(MainActivity.this,AboutActivity.class);
-            startActivity(intent);
-            //Toast.makeText(BookShelfActivity.this,"点击发送",Toast.LENGTH_SHORT).show();
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
+//    @SuppressWarnings("StatementWithEmptyBody")
+//    @Override
+//    public boolean onNavigationItemSelected(MenuItem item) {
+//        // Handle navigation view item clicks here.
+//        int id = item.getItemId();
+//
+//        if (id == R.id.nav_book) {
+//            // Handle the camera action
+//        } else if (id == R.id.nav_search) {
+//
+//        } else if (id == R.id.nav_lable) {
+//
+//        } else if (id == R.id.nav_donate) {
+//
+//        } else if (id == R.id.nav_set) {
+//
+//        } else if (id == R.id.nav_about) {
+//            Intent intent = new Intent(MainActivity.this,AboutActivity.class);
+//            startActivity(intent);
+//            //Toast.makeText(BookShelfActivity.this,"点击发送",Toast.LENGTH_SHORT).show();
+//        }
+//
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        drawer.closeDrawer(GravityCompat.START);
+//        return true;
+//    }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -705,6 +724,148 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
         //String inputText = isMore_textView.getText().toString();
         //save(inputText);
+    }
+
+
+
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        final List<Label> labels = LabelLab.get(this).getLabels();
+        if(id == 1 || (id >=10 && id<10 + labels.size())) {
+            drawerItemId = id;
+        }
+
+        if (id == 1) {
+            //if (mSearchView != null) {
+            //  if (mSearchView.isSearchOpen()) {
+            //    mSearchView.close(true);
+            // }
+            //   }
+            //updateUI(true, null);
+            showLabelMenuItem = false;
+            invalidateOptionsMenu();
+            if(spinner.getSelectedItemPosition()==0) {
+                toolbar.setBackgroundColor(getColor(R.color.colorPrimary));
+                getWindow().setStatusBarColor(getColor(R.color.colorPrimaryDark));
+            }
+        } else if (id == 2) {
+//            mDrawer.setSelection(1);
+//            updateUI(true, null);
+//            if (mSearchView != null) {
+//                if (!mSearchView.isSearchOpen()) {
+//                    mSearchView.open(true);
+//                }
+//            }
+        } else if (id == 3) {
+            final RelativeLayout addLabelDialog = (RelativeLayout)getLayoutInflater().inflate(R.layout.add_label_dialog,null);
+            final EditText label_name=(EditText) addLabelDialog.findViewById(R.id.id_editor_detail);
+            final AlertDialog mdialog = new AlertDialog.Builder(this)
+                    .setTitle("添加标签")
+                    .setView(addLabelDialog)
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener(){
+                        @Override
+                        public void onClick(DialogInterface dialog,int which) {
+                            Label labelToAdd = new Label();
+                            labelToAdd.setTitle(label_name.getText().toString());
+                            LabelLab.get(MainActivity.this).addLabel(labelToAdd);
+                            dialog.dismiss();
+                            onPrepareOptionsDrawerMenu(navigationView.getMenu());
+                          //  onNavigationItemSelected(navigationView.getMenu().findItem(drawerItemId));
+
+                        }
+                    })
+                    .show();
+            mdialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+            label_name.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    TextView textView=(TextView) addLabelDialog.findViewById(R.id.id_editor_detail_font_count);
+                    textView.setText(String.valueOf(s.length())+"/15");
+                    if(s.length()> 0 && s.length() < 15){
+                        mdialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);
+                    }
+                    if(s.length()>=15){
+                        mdialog.getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(false);
+                    }
+                }
+            });
+
+        } else if (id == 4) {
+
+        } else if (id == 5) {
+//            Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+//            startActivity(i);
+
+        } else if (id == 6) {
+//            Intent i = new Intent(MainActivity.this, AboutActivity.class);
+//            startActivity(i);
+            Intent intent = new Intent(MainActivity.this,AboutActivity.class);
+            startActivity(intent);
+        } else if (id >= 10 && id < 10 + labels.size()) {
+//            if (mSearchView != null) {
+//                if (mSearchView.isSearchOpen()) {
+//                    mSearchView.close(true);
+//                }
+//            }
+//            updateUI(true, null);
+//            showLabelMenuItem = true;
+//            invalidateOptionsMenu();
+            toolbar.setBackgroundColor(getColor(R.color.selected_primary));
+            getWindow().setStatusBarColor(getColor(R.color.selected_primary_dark));
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        if(id == 1 || (id >=10 && id<10 + labels.size())) {
+            item.setCheckable(true);//设置选项可选
+            item.setChecked(true);//设置选型被选中
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    public void addLabel(Menu menu){
+        List<Label> labels = LabelLab.get(this).getLabels();
+        for (int i = 0; i < labels.size(); i++) {
+            menu.add(1,i+10,2,labels.get(i).getTitle());
+            menu.findItem(i+10).setIcon(R.drawable.ic_label);
+        }
+    }
+
+    public boolean onPrepareOptionsDrawerMenu(Menu menu) {
+        menu =  navigationView.getMenu();
+
+        menu.clear();
+        menu.add(0,1,1,R.string.drawer_item_books).setIcon(R.drawable.ic_bookshelf);
+        menu.add(0,2,1,R.string.drawer_item_search).setIcon(R.drawable.ic_search);
+        menu.add(1,7,2,"标签").setEnabled(false);
+        menu.add(1,3,3,R.string.drawer_item_create_new_label).setIcon(R.drawable.ic_add);
+        menu.add(2,4,4,R.string.drawer_item_donate).setIcon(R.drawable.ic_donate);
+        menu.add(2,5,4,R.string.drawer_item_settings).setIcon(R.drawable.ic_settings);
+        menu.add(2,6,4,R.string.drawer_item_about).setIcon(R.drawable.ic_about);
+        addLabel(menu);
+        return true;
     }
 
 }
