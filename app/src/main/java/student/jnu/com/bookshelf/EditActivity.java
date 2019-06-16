@@ -64,7 +64,7 @@ public class EditActivity extends AppCompatActivity{
     EditText edit_note ;
     EditText edit_website ;
     ImageView imageView;
-    static String image;
+    String image;
     int books_index;
     //private Button return_view;
     //private Button save_view;
@@ -176,7 +176,6 @@ public class EditActivity extends AppCompatActivity{
         if (MainActivity.intent1 == 1) {
             tmpBookShelfName = "默认书架";
             tmpStatus = Book.NOTSETUP;
-
             Bundle bundle = this.getIntent().getExtras();
             final String ISBN = bundle.getString("isbn");
             edit_ISBN.setText(ISBN);
@@ -207,6 +206,7 @@ public class EditActivity extends AppCompatActivity{
         if(MainActivity.intent1 == 2){
             Bundle bundle = this.getIntent().getExtras();
             books_index = bundle.getInt("books_index");
+            image = MainActivity.books.get(books_index).getImageUrl();
             try{
                 byte[] decode = android.util.Base64.decode(MainActivity.books.get(books_index).getImageUrl(), Base64.DEFAULT);
                 Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
