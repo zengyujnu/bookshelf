@@ -27,7 +27,7 @@
                 android:layout_height="180dp"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/bueaty"
+
                 app:layout_collapseMode="parallax" />
 
 

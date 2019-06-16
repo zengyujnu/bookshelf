@@ -8,8 +8,13 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +33,7 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +64,7 @@ public class EditActivity extends AppCompatActivity{
     EditText edit_note ;
     EditText edit_website ;
     ImageView imageView;
-    String image;
+    static String image;
     int books_index;
     //private Button return_view;
     //private Button save_view;
@@ -77,10 +83,14 @@ public class EditActivity extends AppCompatActivity{
         edit_website = (EditText) findViewById(R.id.edit_website);
         imageView = (ImageView)findViewById(R.id.imageView);
 
-
-
-
-
+        imageView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK, null);
+                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(intent, 2);
+            }
+        });
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.simple_toolbar);
         setSupportActionBar(toolbar);
@@ -226,6 +236,47 @@ public class EditActivity extends AppCompatActivity{
         }
 
     }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (requestCode == 2) {
+            // 从相册返回的数据
+            if (data != null) {
+                // 得到图片的全路径
+                Uri uri = data.getData();
+                imageView.setImageURI(uri);
+                Drawable drawable = imageView.getDrawable();
+                Bitmap bitmap = getBitmap(drawable);
+                image = getBitmapStrBase64(bitmap);
+            }
+        }
+    }
+
+    private Bitmap getBitmap(Drawable drawable) {
+        Bitmap bitmap = Bitmap.createBitmap(
+                drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(),
+                drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
+                        : Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(bitmap);
+        //canvas.setBitmap(bitmap);
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
+    /**
+     * Bitmap 通过Base64 转换为字符串
+     * @param bitmap
+     * @return
+     */
+    private String getBitmapStrBase64(Bitmap bitmap){
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+        byte[] bytes = bos.toByteArray();
+        String string = Base64.encodeToString(bytes, Base64.DEFAULT);
+        return string;
+    }
+
 
     private void initDatas() {
         list = new ArrayList<String>();
@@ -407,6 +458,7 @@ public class EditActivity extends AppCompatActivity{
                     values.put(BookDB.BookTable.Cols.PUBLISHTIME_YEAR,Integer.valueOf(edit_year.getText().toString()));
                 values.put(BookDB.BookTable.Cols.STATUS,tmpStatus);
                 values.put(BookDB.BookTable.Cols.BOOKSHELF,tmpBookShelfName);
+                values.put(BookDB.BookTable.Cols.IMAGEURL,image);
                 String where = BookDB.BookTable.Cols.ID + " = " + MainActivity.books.get(books_index).getID();
                 db.update(BookDB.BookTable.NAME,values,where,null);
                 db.close();

@@ -97,7 +97,7 @@
                 android:layout_marginBottom="15dp"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:text="https://baidu.com"
+                android:text="https://github.com/zengyujnu/bookshelf"
                 android:textSize="16sp"
                 android:textColor="#a68d8b8b"/>
             <View

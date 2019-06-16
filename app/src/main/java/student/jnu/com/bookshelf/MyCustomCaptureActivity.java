@@ -173,6 +173,7 @@ public class MyCustomCaptureActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        MainActivity.isMore_add = false;
                         books.clear();
                         Intent intent = new Intent(MyCustomCaptureActivity.this, MainActivity.class);
                         startActivity(intent);
@@ -256,6 +257,7 @@ public class MyCustomCaptureActivity extends AppCompatActivity {
         if (id == R.id.save) {
             addtoDB();
             books.clear();
+            MainActivity.isMore_add = false;
             Intent intent = new Intent(MyCustomCaptureActivity.this, MainActivity.class);
             startActivity(intent);
             finish();

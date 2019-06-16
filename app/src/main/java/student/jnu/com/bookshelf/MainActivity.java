@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity
     BookListAdapter bookListAdapter;
     Cursor cursor,cursor1;
     SQLiteDatabase db;
-    public boolean isMore_add;
+    public static boolean isMore_add;
     static int intent1 = 0;
     static String isbn = null;
     String[] items = new String[] { "作者", "标题", "出版社","出版时间" };
@@ -112,27 +112,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        /*super.onActivityResult(requestCode, resultCode, data);
-        // 扫描二维码/条码回传
-        if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
-            if (data != null) {
-                String content = data.getStringExtra(Constant.CODED_CONTENT);
-                intent1 = 1;
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, EditActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("isbn", content);
-                intent.putExtras(bundle);
-                startActivity(intent);
-
-            }
-        }*/
         // 获取解析结果
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if(!isMore_add){
                 if (result.getContents() == null) {
-                    Toast.makeText(this, "取消扫描", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(this, "取消扫描", Toast.LENGTH_LONG).show();
                 } else {
                     //Toast.makeText(this, "ISBN:" + result.getContents(), Toast.LENGTH_LONG).show();
                     //edit_ISBN.setText(result.getContents());//单次扫描
@@ -146,16 +131,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             else {//多次扫码
-                /*isMore_textView.setText(isMore_textView.getText() + "  " + result.getContents());
-                save(isMore_textView.getText().toString());*/
-                // 创建IntentIntegrator对象
-                /*intent1 = 3;
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, EditActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("isbn", result.getContents());
-                intent.putExtras(bundle);
-                startActivity(intent);*/
                 // 创建IntentIntegrator对象
                 isbn = result.getContents();
                 IntentIntegrator intentIntegrator = new IntentIntegrator(this);
@@ -210,10 +185,6 @@ public class MainActivity extends AppCompatActivity
                 addTOBooks();
             }
         }
-
-        /*ContentValues values = new ContentValues();
-        values.put(BookDB.BookShelfTable.Cols.BOOKSHELF_NAME,"默认书架");
-        db.insert(BookDB.BookShelfTable.NAME,null,values);*/
 
         bookshelfs.clear();
         bookshelfs.add("所有");
@@ -314,11 +285,7 @@ public class MainActivity extends AppCompatActivity
                 writeAdd.hide();
                 fab.show();
                 fab1.hide();
-                // 创建IntentIntegrator对象
-                //MyCustomCaptureActivity.addsize = 0;
                 IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
-                //设置超时关闭扫描界面
-//                intentIntegrator.setTimeout(10000);
                 intentIntegrator.setCaptureActivity(MyCustomCaptureActivity.class);
                 intentIntegrator.setPrompt("请对准条形码");// 设置提示语
                 intentIntegrator.initiateScan();
@@ -340,27 +307,7 @@ public class MainActivity extends AppCompatActivity
                 writeAdd.hide();
                 fab.show();
                 fab1.hide();
-                //Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
-                /*ZxingConfig是配置类
-                 *可以设置是否显示底部布局，闪光灯，相册，
-                 * 是否播放提示音  震动
-                 * 设置扫描框颜色等
-                 * 也可以不传这个参数
-                 * */
-                /*ZxingConfig config = new ZxingConfig();
-                config.setPlayBeep(true);//是否播放扫描声音 默认为true
-                config.setShake(true);//是否震动  默认为true
-                config.setDecodeBarCode(true);//是否扫描条形码 默认为true
-                config.setReactColor(R.color.colorWhite);//设置扫描框四个角的颜色 默认为白色
-                config.setFrameLineColor(R.color.colorWhite);//设置扫描框边框颜色 默认无色
-                config.setScanLineColor(R.color.colorWhite);//设置扫描线的颜色 默认白色
-                config.setFullScreenScan(false);//是否全屏扫描  默认为true  设为false则只会在扫描框中扫描
-                intent.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                startActivityForResult(intent, REQUEST_CODE_SCAN);*/
-                // 创建IntentIntegrator对象
                 IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
-                //设置超时关闭扫描界面
-//                intentIntegrator.setTimeout(10000);
                 intentIntegrator.setCaptureActivity(CustomCaptureActivity.class);
                 intentIntegrator.initiateScan();
                 isMore_add = false;
@@ -456,24 +403,6 @@ public class MainActivity extends AppCompatActivity
                 writeAdd.hide();
                 fab.show();
                 fab1.hide();
-                //Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
-                /*ZxingConfig是配置类
-                 *可以设置是否显示底部布局，闪光灯，相册，
-                 * 是否播放提示音  震动
-                 * 设置扫描框颜色等
-                 * 也可以不传这个参数
-                 * */
-                /*ZxingConfig config = new ZxingConfig();
-                config.setPlayBeep(true);//是否播放扫描声音 默认为true
-                config.setShake(true);//是否震动  默认为true
-                config.setDecodeBarCode(true);//是否扫描条形码 默认为true
-                config.setReactColor(R.color.colorWhite);//设置扫描框四个角的颜色 默认为白色
-                config.setFrameLineColor(R.color.colorWhite);//设置扫描框边框颜色 默认无色
-                config.setScanLineColor(R.color.colorWhite);//设置扫描线的颜色 默认白色
-                config.setFullScreenScan(false);//是否全屏扫描  默认为true  设为false则只会在扫描框中扫描
-                intent.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                startActivityForResult(intent, REQUEST_CODE_SCAN);
-                isMore_add = false;*/
                 // 创建IntentIntegrator对象
                 IntentIntegrator intentIntegrator = new IntentIntegrator(MainActivity.this);
                 //设置超时关闭扫描界面
@@ -628,9 +557,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -750,43 +676,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-//    @SuppressWarnings("StatementWithEmptyBody")
-//    @Override
-//    public boolean onNavigationItemSelected(MenuItem item) {
-//        // Handle navigation view item clicks here.
-//        int id = item.getItemId();
-//
-//        if (id == R.id.nav_book) {
-//            // Handle the camera action
-//        } else if (id == R.id.nav_search) {
-//
-//        } else if (id == R.id.nav_lable) {
-//
-//        } else if (id == R.id.nav_donate) {
-//
-//        } else if (id == R.id.nav_set) {
-//
-//        } else if (id == R.id.nav_about) {
-//            Intent intent = new Intent(MainActivity.this,AboutActivity.class);
-//            startActivity(intent);
-//            //Toast.makeText(BookShelfActivity.this,"点击发送",Toast.LENGTH_SHORT).show();
-//        }
-//
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        drawer.closeDrawer(GravityCompat.START);
-//        return true;
-//    }
-
-
-
-    /*private class mItemClick implements android.widget.AdapterView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int intent1, long l) {
-            Intent intent = new Intent(MainActivity.this,BookDetailActivity.class);
-            startActivity(intent);
-        }
-    }*/
-
     //booklist的适配器
     class BookListAdapter extends BaseAdapter {
 
@@ -902,35 +791,10 @@ public class MainActivity extends AppCompatActivity
         ((BaseAdapter)shelfChoose.getAdapter()).notifyDataSetChanged();
     }
 
-    /*public void save(String inputText) {
-        FileOutputStream out = null;
-        BufferedWriter writer = null;
-        try {
-            out = openFileOutput("data", Context.MODE_PRIVATE);
-            writer = new BufferedWriter(new OutputStreamWriter(out));
-            writer.write(inputText);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (writer != null) {
-                    writer.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }*/
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //String inputText = isMore_textView.getText().toString();
-        //save(inputText);
     }
-
-
 
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -944,12 +808,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (id == 1) {
-            //if (mSearchView != null) {
-            //  if (mSearchView.isSearchOpen()) {
-            //    mSearchView.close(true);
-            // }
-            //   }
-            //updateUI(true, null);
             showLabelMenuItem = false;
             invalidateOptionsMenu();
             if(spinner.getSelectedItemPosition()==0) {
@@ -1062,11 +920,11 @@ public class MainActivity extends AppCompatActivity
 
         menu.clear();
         menu.add(0,1,1,R.string.drawer_item_books).setIcon(R.drawable.ic_bookshelf);
-        menu.add(0,2,1,R.string.drawer_item_search).setIcon(R.drawable.ic_search);
+//        menu.add(0,2,1,R.string.drawer_item_search).setIcon(R.drawable.ic_search);
         menu.add(1,7,2,"标签").setEnabled(false);
         menu.add(1,3,3,R.string.drawer_item_create_new_label).setIcon(R.drawable.ic_add);
-        menu.add(2,4,4,R.string.drawer_item_donate).setIcon(R.drawable.ic_donate);
-        menu.add(2,5,4,R.string.drawer_item_settings).setIcon(R.drawable.ic_settings);
+//        menu.add(2,4,4,R.string.drawer_item_donate).setIcon(R.drawable.ic_donate);
+//        menu.add(2,5,4,R.string.drawer_item_settings).setIcon(R.drawable.ic_settings);
         menu.add(2,6,4,R.string.drawer_item_about).setIcon(R.drawable.ic_about);
         addLabel(menu);
         return true;
